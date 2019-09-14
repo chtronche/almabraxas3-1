@@ -13,4 +13,10 @@ static const PinName DEBUG_LED_YELLOW = PC_5;
 static const PinName DEBUG_LED_BLUE = PC_6;
 static const PinName DEBUG_LED_WHITE = PC_8;
 
+static const PinName SAMPLER_VOLTAGE_PIN = PC_0;
+static const PinName SAMPLER_CURRENT_PIN = PC_1;
+
+static const PinName PWM_LEFT = PA_0;
+static const PinName PWM_RIGHT = PA_1;
+
 #endif // _WIRING_H_

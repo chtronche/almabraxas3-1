@@ -4,11 +4,11 @@
 
 static uint32_t start;
 
-class _init {
-    _init() {
+static struct _initC {
+    _initC() {
         start = time(NULL);
     }
-};
+} _init;
 
 uint32_t getClock() {
     return time(NULL) - start;

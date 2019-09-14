@@ -20,6 +20,6 @@ void reporting_loop() {
 	    hysteresis,
 	    badCommand, comment);
     reporting_debug_print_serial(buffer);
-    wait(1);
+    wait_ms(1000);
   }
 }

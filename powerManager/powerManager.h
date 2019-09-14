@@ -7,6 +7,8 @@
 
 #include <sys/types.h>
 
+typedef uint16_t power_t; // in W/100
+
 extern volatile uint8_t voltage; // in V/10
 extern volatile uint8_t current; // in A/10
 
@@ -21,6 +23,9 @@ extern unsigned hysteresis;
 
 extern volatile uint16_t voltageReading;
 extern volatile uint16_t currentReading;
-extern volatile uint16_t peakPower; // in PWM unit
+extern volatile power_t peakPower;
+
+void powerManager_loop(uint8_t v, uint8_t i);
+void powerManager_setMotorPower(int16_t leftPower, int16_t rightPower);
 
 #endif // _POWER_MANAGER_H_
