@@ -5,6 +5,7 @@
 #include <sys/types.h>
 
 #include "calibration.h"
+#include "LinearMapper.h"
 #include "powerManager.h"
 
 volatile uint8_t voltage; // in V/10
@@ -89,13 +90,12 @@ static void powerManager_getPowerBudget(uint8_t voltage, uint8_t current) {
 
 // ================================= Loop =============================
 
-static int n = 0;
+static LinearMapper _vMapper(1021, 65, 3814, 230);
+static LinearMapper _iMapper(2860, 25, 3261, 123);
 
-void powerManager_loop(uint8_t v, uint8_t i) {
-  voltage = v;
-  current = i;
-  if (++n < 150) return; // check only every ~1s during debug
-  n = 0;
+void powerManager_loop(uint16_t v, uint16_t i) {
+  voltage = int(_vMapper.convert(v));
+  current = int(_iMapper.convert(v));
   powerManager_getPowerBudget(v, i);
   int16_t l, r;
   powerManager_dispatchPower(powerBudget, 0, 0, l, r);

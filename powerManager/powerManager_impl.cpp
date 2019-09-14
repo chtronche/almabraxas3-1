@@ -22,7 +22,7 @@ void _loopFn() {
   for(;;) {
     voltageReading = _vin.read_u16() >> 4;
     currentReading = _iin.read_u16() >> 4;
-    powerManager_loop(0, 0);
+    powerManager_loop(voltageReading, currentReading);
     wait_ms(10);
   }
 }

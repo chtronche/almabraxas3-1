@@ -14,7 +14,6 @@ void reporting_loop() {
     processCommand(reporting_serial_read());
     uint32_t clock = getClock();
     const char *comment = "<comment>";
-    int badCommand = -1;
     sprintf(buffer, "%ld V=%d %d I=%d %d P=%d MPPT=%d L=%d R=%d POW=%d PP=%d H=%d %ld %s",
 	    clock, voltage, voltageReading,
 	    current, currentReading,
