@@ -8,7 +8,9 @@
 uint32_t getClock();
 
 void reporting_debug_print_serial(const char *);
+void reporting_debug_print(const char *);
 
+const char *reporting_serial_read();
 void reporting_loop();
 
 #endif // _REPORTING_H_

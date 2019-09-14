@@ -2,6 +2,8 @@
 #include <sys/types.h>
 
 #include "mbed.h"
+
+#include "commander.h"
 #include "powerManager.h"
 #include "reporting.h"
 
@@ -9,6 +11,7 @@ static char buffer[256];
 
 void reporting_loop() {
   for(;;) {
+    processCommand(reporting_serial_read());
     uint32_t clock = getClock();
     const char *comment = "<comment>";
     int badCommand = -1;
@@ -22,4 +25,8 @@ void reporting_loop() {
     reporting_debug_print_serial(buffer);
     wait_ms(1000);
   }
+}
+
+void reporting_debug_print(const char *s) {
+  reporting_debug_print_serial(s);
 }

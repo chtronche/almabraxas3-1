@@ -11,13 +11,10 @@ volatile uint8_t voltage; // in V/10
 volatile uint8_t current; // in A/100
 volatile int16_t leftPower = 0, rightPower = 0;
 
-//bool mpptOn = true;
-bool mpptOn = false;
-
-unsigned hysteresis = 2000;
 uint16_t powerBudget = 0; // in PWM units
-int8_t mppt_direction = 2; // start by increasing
 static uint16_t peakPowerBudget = 0; // in PWM unit
+
+// ========================= dispatchPower ====================================
 
 static void powerManager_dispatchPower(
     uint16_t powerBudget, uint8_t heading, uint8_t targetHeading, 
@@ -27,6 +24,12 @@ static void powerManager_dispatchPower(
   leftPower = powerBudget / 2;
   rightPower = powerBudget - leftPower;
 }
+
+// ============================== getPowerBudget ================================
+
+bool mpptOn = true;
+int8_t mppt_direction = 2; // start by increasing
+unsigned hysteresis = 2000;
 
 static void reverseMPPTDirection() {
   mppt_direction = -mppt_direction;
@@ -84,6 +87,8 @@ static void powerManager_getPowerBudget(uint8_t voltage, uint8_t current) {
   powerBudget += mppt_direction;
 }
 
+// ================================= Loop =============================
+
 static int n = 0;
 
 void powerManager_loop(uint8_t v, uint8_t i) {
@@ -93,9 +98,6 @@ void powerManager_loop(uint8_t v, uint8_t i) {
   n = 0;
   powerManager_getPowerBudget(v, i);
   int16_t l, r;
-  // <temp>
-  powerBudget++;
-  // </temp>
   powerManager_dispatchPower(powerBudget, 0, 0, l, r);
   leftPower = l;
   rightPower = r;
