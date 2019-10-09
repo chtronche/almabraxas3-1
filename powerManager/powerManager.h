@@ -7,25 +7,31 @@
 
 #include <sys/types.h>
 
-typedef uint16_t power_t; // in W/100
+typedef uint16_t power_t;
+
+// Compute left and right power using heading and targetHeading
+
+void powerManager_loop_cb(uint16_t v, uint16_t i);
 
 extern volatile uint8_t voltage; // in V/10
 extern volatile uint8_t current; // in A/10
-
-extern int8_t mppt_direction; // +2 if increasing, -2 if decreasing
-extern uint16_t powerBudget; // in PWM unit
+extern int8_t mppt_direction;    // +2 if increasing, -2 if decreasing
+extern  uint16_t powerBudget;     // in PWM unit
 extern volatile int16_t leftPower, rightPower; // in PWM unit
 
+// Then set left and right power
+
+void powerManager_setMotorPower_wait_for_init();
+void powerManager_setMotorPower(int16_t leftPower, int16_t rightPower);
+
+// Control
+
 extern bool mpptOn; // false to set powerBudget manually
-extern unsigned hysteresis;
+
+//extern unsigned hysteresis;
 
 // debug
 
-extern volatile uint16_t voltageReading;
-extern volatile uint16_t currentReading;
-extern volatile power_t peakPower;
-
-void powerManager_loop(uint16_t v, uint16_t i);
-void powerManager_setMotorPower(int16_t leftPower, int16_t rightPower);
+extern power_t peakPower;
 
 #endif // _POWER_MANAGER_H_

@@ -7,12 +7,6 @@
 
 static uint32_t start;
 
-static struct _initC {
-    _initC() {
-        start = time(NULL);
-    }
-} _init;
-
 uint32_t getClock() {
     return time(NULL) - start;
 }
@@ -28,6 +22,13 @@ void reporting_debug_print_serial(const char *buffer) {
   pc.printf(buffer);
   pc.printf("\n");
 }
+
+static struct _initC {
+    _initC() {
+        start = time(NULL);
+	serial.baud(115200);
+    }
+} _init;
 
 // =================== Read commands from serial =================================
 

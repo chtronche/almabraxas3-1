@@ -12,16 +12,17 @@ static char buffer[256];
 void reporting_loop() {
   for(;;) {
     processCommand(reporting_serial_read());
-    uint32_t clock = getClock();
-    const char *comment = "<comment>";
-    sprintf(buffer, "%ld V=%d %d I=%d %d P=%d MPPT=%d L=%d R=%d POW=%d PP=%d H=%d %ld %s",
-	    clock, voltage, voltageReading,
-	    current, currentReading,
-	    powerBudget, mppt_direction, leftPower, rightPower,
-	    voltage * current, peakPower,
-	    hysteresis,
-	    badCommand, comment);
-    reporting_debug_print_serial(buffer);
+    printf(".");
+    // uint32_t clock = getClock();
+    // const char *comment = "<comment>";
+    // sprintf(buffer, "%ld V=%d %d I=%d %d P=%d MPPT=%d L=%d R=%d POW=%d PP=%d H=%d %ld %s",
+    // 	    clock, voltage, voltageReading,
+    // 	    current, currentReading,
+    // 	    powerBudget, mppt_direction, leftPower, rightPower,
+    // 	    voltage * current, peakPower,
+    // 	    hysteresis,
+    // 	    badCommand, comment);
+    // reporting_debug_print_serial(buffer);
     wait_ms(1000);
   }
 }

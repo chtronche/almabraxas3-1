@@ -11,7 +11,7 @@ class LinearMapper {
   LinearMapper() { }
   LinearMapper(int from0, float to0, int from1, float to1) {computeFactor(from0, to0, from1, to1);}
   void computeFactor(int from0, float to0, int from1, float to1);
-  float convert(int v) { return a * v + b; }
+  float convert(int v) const { return a * v + b; }
 
  public:
   float a, b;

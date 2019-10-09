@@ -9,7 +9,7 @@
 #include "powerManager.h"
 
 volatile uint8_t voltage; // in V/10
-volatile uint8_t current; // in A/100
+volatile uint8_t current; // in A/10
 volatile int16_t leftPower = 0, rightPower = 0;
 
 uint16_t powerBudget = 0; // in PWM units
@@ -28,9 +28,12 @@ static void powerManager_dispatchPower(
 
 // ============================== getPowerBudget ================================
 
-bool mpptOn = true;
+//bool mpptOn = true;
+bool mpptOn = false;
+power_t peakPower;
+
 int8_t mppt_direction = 2; // start by increasing
-unsigned hysteresis = 2000;
+unsigned hysteresis = 200; // That is 2W
 
 static void reverseMPPTDirection() {
   mppt_direction = -mppt_direction;
@@ -93,10 +96,14 @@ static void powerManager_getPowerBudget(uint8_t voltage, uint8_t current) {
 static LinearMapper _vMapper(1021, 65, 3814, 230);
 static LinearMapper _iMapper(2860, 25, 3261, 123);
 
-void powerManager_loop(uint16_t v, uint16_t i) {
-  voltage = int(_vMapper.convert(v));
-  current = int(_iMapper.convert(v));
-  powerManager_getPowerBudget(v, i);
+#include "adebug.h"
+#include "mbed.h"
+
+void powerManager_loop_cb(uint16_t v, uint16_t i) {
+  voltage = _vMapper.convert(v);
+  current = _iMapper.convert(i);
+  
+  powerManager_getPowerBudget(voltage, current);
   int16_t l, r;
   powerManager_dispatchPower(powerBudget, 0, 0, l, r);
   leftPower = l;
