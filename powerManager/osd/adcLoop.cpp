@@ -141,7 +141,7 @@ static void loop() {
     CriticalSectionLock::disable();
     i /= nn;
     v /= nn;
-    powerManager_loop_cb(i, v);
+    powerManager_loop_cb(v, i);
     wait_ms(10);
   }
 }

@@ -23,13 +23,6 @@ void reporting_debug_print_serial(const char *buffer) {
   pc.printf("\n");
 }
 
-static struct _initC {
-    _initC() {
-        start = time(NULL);
-	serial.baud(115200);
-    }
-} _init;
-
 // =================== Read commands from serial =================================
 
 static const int _bufferSize = 64;
@@ -55,4 +48,11 @@ const char *reporting_serial_read() {
   }
   pc.read((uint8_t *)_command, _bufferSize, _readCBE, SERIAL_EVENT_RX_CHARACTER_MATCH, '\n');
   return NULL;
+}
+
+static Thread _reportingLoop;
+
+void reporting_init() {
+  start = time(NULL);
+  pc.baud(115200);
 }

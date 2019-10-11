@@ -93,13 +93,17 @@ static void powerManager_getPowerBudget(uint8_t voltage, uint8_t current) {
 
 // ================================= Loop =============================
 
-static LinearMapper _vMapper(1021, 65, 3814, 230);
-static LinearMapper _iMapper(2860, 25, 3261, 123);
+static LinearMapper _vMapper(883, 50, 3218, 200);
+static LinearMapper _iMapper(3070, 8, 3334, 94);
 
 #include "adebug.h"
 #include "mbed.h"
 
+uint16_t voltageReading, currentReading;
+
 void powerManager_loop_cb(uint16_t v, uint16_t i) {
+  voltageReading = v;
+  currentReading = i;
   voltage = _vMapper.convert(v);
   current = _iMapper.convert(i);
   
