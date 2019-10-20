@@ -14,4 +14,11 @@ const char *reporting_serial_read();
 void reporting_init();
 void reporting_loop();
 
+// Impl
+
+void radioSendFrame(unsigned len, const char *);
+char *readRadioPacket();
+
+int16_t getRSSI();
+
 #endif // _REPORTING_H_

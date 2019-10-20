@@ -21,7 +21,6 @@ extern volatile int16_t leftPower, rightPower; // in PWM unit
 
 // Then set left and right power
 
-void powerManager_setMotorPower_wait_for_init();
 void powerManager_setMotorPower(int16_t leftPower, int16_t rightPower);
 
 // Control

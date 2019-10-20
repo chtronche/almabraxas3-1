@@ -150,7 +150,6 @@ static Thread thread;
 
 static struct _initS {
   _initS() {
-    powerManager_setMotorPower_wait_for_init();
     _adc_init();
     thread.start(loop);
   }
