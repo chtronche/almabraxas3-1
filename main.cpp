@@ -2,11 +2,13 @@
 
 #include "adebug.h"
 #include "mbed.h"
+#include "ping.h"
 #include "reporting.h"
 
 DigitalOut myled(LED1);
 
 FlashIAP flash;
+Ping ping;
 
 int main()
 {

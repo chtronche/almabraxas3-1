@@ -4,7 +4,7 @@
 #include "RFM69registers.h"
 #include "wiring.h"
 
-static RFM69 rfm69(RFM69_MOSI, RFM69_MISO, RFM69_SCLK, RFM69_CS, RFM69_INT);
+RFM69 rfm69(RFM69_MOSI, RFM69_MISO, RFM69_SCLK, RFM69_CS, RFM69_INT);
 static DigitalOut reset(RFM69_RST);
 
 static void _initProc() {
@@ -15,6 +15,8 @@ static void _initProc() {
   rfm69.initialize(RF69_433MHZ, 'P', 21);
   rfm69.setPowerLevel(31);
   rfm69.promiscuous();
+  rfm69.writeReg(REG_PALEVEL, 0x7f);
+  rfm69.writeReg(REG_OCP, 0x0f);
 }
 
 static AsyncStarter _init(_initProc);

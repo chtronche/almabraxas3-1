@@ -50,8 +50,6 @@ const char *reporting_serial_read() {
   return NULL;
 }
 
-static Thread _reportingLoop;
-
 void reporting_init() {
   start = time(NULL);
   pc.baud(115200);

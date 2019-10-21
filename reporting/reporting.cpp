@@ -4,6 +4,8 @@
 #include "mbed.h"
 
 #include "commander.h"
+#include "main.h"
+#include "ping.h"
 #include "powerManager.h"
 #include "reporting.h"
 
@@ -25,13 +27,14 @@ void reporting_loop() {
   processCommand(readRadioPacket());
   uint32_t clock = getClock();
   const char *comment = "<comment>";
-  sprintf(buffer, "%ld V=%d %d I=%d %d P=%d MPPT=%d L=%d R=%d POW=%d PP=%d H=%d %ld %s",
+  int rssi = getRSSI();
+  sprintf(buffer, "%ld V=%d %d I=%d %d P=%d MPPT=%d L=%d R=%d POW=%d PP=%d H=%d %ld %s v%d %d",
 	  clock, voltage, voltageReading,
 	  current, currentReading,
 	  powerBudget, mppt_direction, leftPower, rightPower,
 	  voltage * current, peakPower,
 	  hysteresis,
-	  badCommand, comment);
+	  badCommand, comment, rssi, ping.lost);
   reporting_debug_print_serial(buffer);
   
   char *p = buffer;
@@ -48,7 +51,8 @@ void reporting_loop() {
   add32(p, peakPower);
   add16(p, hysteresis);
   add32(p, badCommand);
-  add16(p, getRSSI());
+  add16(p, rssi);
+  add16(p, ping.lost);
   radioSendFrame(p - buffer, buffer);
 }
 

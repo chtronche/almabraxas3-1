@@ -3,6 +3,8 @@
 #include <string.h>
 
 #include "commander.h"
+#include "main.h"
+#include "ping.h"
 #include "powerManager.h"
 #include "reporting.h"
 #include "TokenFinder.h"
@@ -16,6 +18,7 @@ static token _verbFinderData[] = {
   "stop", 0x400,
   "read", 0x500,
   "convert", 0x600,
+  "pi", 0x700,
   NULL, 0
 };
 
@@ -28,6 +31,7 @@ static token _nounFinderData[] = {
     "voltage", 0x4,
     "current", 0x5,
     "hysteresis", 0x6,
+    "ng", 0x7,
     NULL, 0
 };
 
@@ -49,17 +53,27 @@ char comment[17];
 
 static char _x[128];
 
+int nnn;
+
 void processCommand(const char *command) {
   if (!command) return;
-  sprintf(_x, ">%s", command);
-  reporting_debug_print(_x);
 
+  bool bc = false;
   const char *_next;
+  unsigned noun;
   unsigned verb = _verbFinder.find(command, &_next);
-  if (!verb) { ++badCommand; return; }
-  unsigned noun = _nounFinder.find(_next, &_next);
-  if (!noun) { ++badCommand; return; }
-  reporting_debug_print_serial(_x);
+  if (!verb)
+    bc = true;
+  else {
+    noun = _nounFinder.find(_next, &_next);
+    if (!noun) bc = true;
+  }
+  if (bc) {
+    ++badCommand;
+    sprintf(_x, ">%s", command);
+    reporting_debug_print_serial(_x);
+    return;
+  }
 
   switch(verb|noun) {
   case 0x101: // Set comment
@@ -103,6 +117,10 @@ void processCommand(const char *command) {
   //   powerManager_commanderSetHysteresis(_next);
   //   break;
 
+  case 0x707: // ping (aka pi ng)
+    ping.received(atoi(_next));
+    break;
+    
   default:
     ++badCommand;
   }
