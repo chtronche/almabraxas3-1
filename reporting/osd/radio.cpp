@@ -2,6 +2,8 @@
 #include "AsyncStarter.h"
 #include "RFM69.h"
 #include "RFM69registers.h"
+
+#include "crc.h"
 #include "wiring.h"
 
 RFM69 rfm69(RFM69_MOSI, RFM69_MISO, RFM69_SCLK, RFM69_CS, RFM69_INT);
@@ -23,6 +25,10 @@ static AsyncStarter _init(_initProc);
 
 void radioSendFrame(unsigned len, const char *s) {
   _init.ready();
+  if (len < 58) {
+    ((char *)s)[len] = computeCRC(len, s);
+    ++len;
+  }
   rfm69.send(99, s, len, false);
   rfm69.receiveDone();
 }
@@ -34,7 +40,6 @@ static char buffer[RF69_MAX_DATA_LEN + 1];
 char *readRadioPacket() {
   _init.ready();
   if (!rfm69.receiveDone()) return NULL;
-  int rssi = rfm69.RSSI;
   unsigned len = MIN(rfm69.DATALEN, RF69_MAX_DATA_LEN);
   memcpy(buffer, (void *)rfm69.DATA, len);
   buffer[len] = '\0';
