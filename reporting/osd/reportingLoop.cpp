@@ -50,7 +50,10 @@ const char *reporting_serial_read() {
   return NULL;
 }
 
+//#include "navigator.h"
+
 void reporting_init() {
   start = time(NULL);
   pc.baud(115200);
+  //test_nav();
 }
