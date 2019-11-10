@@ -1,5 +1,9 @@
 #include <math.h>
 
+#include "AsyncStarter.h"
+#include "FXOS8700.h"
+#include "wiring.h"
+
 static float radians(float degrees) {
   return degrees * M_PI / 180.0;
 }
@@ -82,3 +86,24 @@ void test_nav() {
     lat0 = lat1;
   }
 }
+
+uint16_t magneticHeading;
+static FXOS8700 compass(ALMA_SDA, ALMA_SCL);
+
+static void getMagneticHeading() {
+  float mag[3];
+  compass.acquire_mag_data_uT(mag);
+  int heading = int(atan2(mag[1], mag[0]) * 180.0 / M_PI);
+  if (heading < 0) heading += 360;
+  magneticHeading = heading;
+}
+
+static void initProc() {
+  compass.mag_config();
+  for(;;) {
+    getMagneticHeading();
+    ThisThread::sleep_for(10000);
+  }
+}
+
+static AsyncStarter _init(initProc);

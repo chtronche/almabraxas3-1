@@ -26,4 +26,7 @@ static const PinName RFM69_CS = PB_1;
 static const PinName RFM69_INT = PA_9;
 static const PinName RFM69_RST = PC_7;
 
+static const PinName ALMA_SCL = PB_8;
+static const PinName ALMA_SDA = PB_9;
+
 #endif // _WIRING_H_

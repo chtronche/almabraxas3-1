@@ -5,6 +5,7 @@
 
 #include "commander.h"
 #include "main.h"
+#include "navigator.h"
 #include "ping.h"
 #include "powerManager.h"
 #include "reporting.h"
@@ -28,12 +29,12 @@ void reporting_loop() {
   uint32_t clock = getClock();
   const char *comment = "<comment>";
   int rssi = getRSSI();
-  sprintf(buffer, "%ld V=%d %d I=%d %d P=%d MPPT=%d L=%d R=%d POW=%d PP=%d H=%d %ld %s v%d %d",
+  sprintf(buffer, "%ld V=%d %d I=%d %d P=%d MPPT=%d L=%d R=%d POW=%d PP=%d H=%d MH=%d %ld %s v%d %d",
 	  clock, voltage, voltageReading,
 	  current, currentReading,
 	  powerBudget, mppt_direction, leftPower, rightPower,
 	  voltage * current, peakPower,
-	  hysteresis,
+	  hysteresis, magneticHeading,
 	  badCommand, comment, rssi, ping.lost);
   reporting_debug_print_serial(buffer);
   
@@ -53,6 +54,7 @@ void reporting_loop() {
   add32(p, badCommand);
   add16(p, rssi);
   add16(p, ping.lost);
+  add16(p, magneticHeading);
   radioSendFrame(p - buffer, buffer);
 }
 
