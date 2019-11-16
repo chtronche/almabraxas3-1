@@ -29,4 +29,7 @@ static const PinName RFM69_RST = PC_7;
 static const PinName ALMA_SCL = PB_8;
 static const PinName ALMA_SDA = PB_9;
 
+static const PinName GPS_TX = PB_6;
+static const PinName GPS_RX = PA_10;
+
 #endif // _WIRING_H_

@@ -5,7 +5,7 @@
 
 #include "commander.h"
 #include "main.h"
-#include "navigator.h"
+#include "nav.h"
 #include "ping.h"
 #include "powerManager.h"
 #include "reporting.h"

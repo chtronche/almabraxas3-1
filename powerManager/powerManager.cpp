@@ -6,7 +6,9 @@
 
 #include "calibration.h"
 #include "LinearMapper.h"
+#include "nav.h"
 #include "powerManager.h"
+
 
 volatile uint8_t voltage; // in V/10
 volatile uint8_t current; // in A/10
@@ -22,6 +24,10 @@ static void powerManager_dispatchPower(
     int16_t &leftPower, int16_t &rightPower) {
   (void)heading;
   (void)targetHeading;
+  if (!fixOk) { // We don't know where we are (and thus where to go)
+    leftPower = rightPower = 0;
+    return;
+  }
   leftPower = powerBudget / 2;
   rightPower = powerBudget - leftPower;
 }
@@ -46,7 +52,7 @@ static void reverseMPPTDirection() {
 
 static void powerManager_getPowerBudget(uint8_t voltage, uint8_t current) {
   if (!mpptOn) return;
-  if (voltage < 75) {
+  if (voltage < 100) {
     powerBudget = peakPower = peakPowerBudget = 0;
     mppt_direction = 2;
     return;
