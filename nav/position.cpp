@@ -2,6 +2,7 @@
 
 #include "AsyncStarter.h"
 #include "mbed.h"
+#include "nav.h"
 #include "wiring.h"
 
 static Serial gps(GPS_TX, GPS_RX, 9600);
@@ -38,7 +39,8 @@ static int nbJours(int d, int m, int y) {
 
 static uint32_t _epoch0 = nbJours(1, 1, 1970);
 
-static float latf, lonf;
+Mutex coordMutex;
+float latf, lonf = 100;
 
 static float convertDeg(const char *p, bool _3digit, bool neg) {
   const char *pp;
@@ -71,15 +73,24 @@ static void processGPSMessage(char *msg) {
   printf("\n");
   if (strcmp(_message[0], "$GPRMC")) return;
   fixOk = _message[2][0] == 'A';
-  //if (!fixOk) return;
+  if (!fixOk) {
+    coordMutex.lock();
+    latf = 100;
+    coordMutex.unlock();
+    return;
+  }
 
   const char *date = _message[9];
   const char *time = _message[1];
   gpsClock = ((nbJours(d2(date), d2(date + 2), 2000 + d2(date + 4)) - _epoch0) * 86400
 		  + d2(time) * 3600 + d2(time + 2) * 60 + d2(time + 4));
 
-  latf = convertDeg(_message[3], false, _message[4][0] != 'N');
-  lonf = convertDeg(_message[5], true, _message[6][0] != 'E');
+  float latf_ = convertDeg(_message[3], false, _message[4][0] != 'N');
+  float lonf_ = convertDeg(_message[5], true, _message[6][0] != 'E');
+  coordMutex.lock();
+  latf = latf_;
+  lonf = lonf_;
+  coordMutex.unlock();
 }
 
 static const unsigned gpsBufferLength = 92;
@@ -108,10 +119,11 @@ static void initProc() {
     if (_events & SERIAL_EVENT_RX_CHARACTER_MATCH) {
       char *p = strchr(_gpsMessage, '\r');
       *p = '\n';
-      strcpy(_gpsMessage, debugMsg);
+      // strcpy(_gpsMessage, debugMsg);
       printf(_gpsMessage);
       processGPSMessage(_gpsMessage);
     }
+    bearing_loop(latf, lonf);
     gps.read((uint8_t *)_gpsMessage, gpsBufferLength - 1, serialCB, SERIAL_EVENT_RX_ALL, '\n');
   }
 }
