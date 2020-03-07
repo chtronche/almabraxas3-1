@@ -4,8 +4,29 @@
 extern bool fixOk;
 extern uint32_t gpsClock;
 
-extern uint16_t magneticHeading;
+extern uint8_t magneticHeading;
+
+extern float latf, lonf;
 
 //void test_nav();
+
+// From bearing
+
+void bearing_loop(float lat, float lon);
+
+// From compass
+
+uint16_t getMagneticHeading(); // In 1/100 of degrees
+
+// From navigator
+
+void distAndHeading(float lon0, float lat0, float lon1, float lat1,
+		    float &distanceM, float &bearing);
+
+float computeTargetHeading(float lon, float lat);
+
+typedef struct {
+  float lat, lon;
+} cell;
 
 #endif // _NAVIGATOR_H_

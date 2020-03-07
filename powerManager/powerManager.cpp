@@ -24,7 +24,7 @@ static void powerManager_dispatchPower(
     int16_t &leftPower, int16_t &rightPower) {
   (void)heading;
   (void)targetHeading;
-  if (!fixOk) { // We don't know where we are (and thus where to go)
+  if (!fixOk && mpptOn) { // We don't know where we are (and thus where to go)
     leftPower = rightPower = 0;
     return;
   }

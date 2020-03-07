@@ -4,6 +4,8 @@
 #include "powerManager.h"
 #include "wiring.h"
 
+#include "reporting.h"
+
 static PwmOut _left(PWM_LEFT);
 static PwmOut _right(PWM_RIGHT);
 
@@ -17,6 +19,9 @@ static AsyncStarter _init(powerManager_setMotorPower_wait_for_init);
 
 void powerManager_setMotorPower(int16_t leftPower, int16_t rightPower) {
   _init.ready();
+  char buffer[64];
+  sprintf(buffer, "pow = %d\n", rightPower);
+  reporting_debug_print(buffer);
   _left.pulsewidth_us(590 + leftPower);
   _right.pulsewidth_us(1500 + rightPower);
 }
