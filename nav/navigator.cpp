@@ -1,27 +1,31 @@
 #include <math.h>
 
-#include "AsyncStarter.h"
-#include "FXOS8700.h"
-#include "wiring.h"
+#include "mbed.h"
+#include "nav.h"
+
+static bool _inited = false;
+uint16_t wNavPnt = -1;
 
 static float radians(float degrees) {
   return degrees * M_PI / 180.0;
 }
 
-static float degrees(float radians) {
-  return radians * 180.0 / M_PI;
-}
+// static float degrees(float radians) {
+//   return radians * 180.0 / M_PI;
+// }
 
 static float sqr(float x) { // Come on guys
   return x * x;
 }
 
+static const float _2_pi = M_PI * 2;
+
 // (Haversine formula)
 // Input: latitude / longitude of both points in degrees and fraction of degrees
 // Output: distanceM the distance in meters and bearing the bearing
-// from first to second point in positive degrees
+// from first to second point in radians in [-pi,pi]
 
-static void distAndHeading(float lon0, float lat0, float lon1, float lat1,
+void distAndHeading(float lon0, float lat0, float lon1, float lat1,
 			   float &distanceM, float &bearing) {
   float deltaLat = lat1 - lat0;
   float deltaLon = lon1 - lon0;
@@ -34,9 +38,7 @@ static void distAndHeading(float lon0, float lat0, float lon1, float lat1,
 
   float y = sin(deltaLon) * clat1;
   float x = clat0 * sin(lat1) - sin(lat0) * clat1 * cos(deltaLon);
-  float b = degrees(atan2(y, x));
-  if (b < 0) b += 360.0;
-  bearing = b;
+  bearing = atan2(y, x);
 }
 
 static float lac[] = {
@@ -61,10 +63,53 @@ static float lac[] = {
   1000, 1000
 };
 
-#include "mbed.h"
+static cell feuch1[] = {
+  1.975363849732992,48.87794375473663,
+  1.975102689568917,48.8780274694703,
+  1.975353484818965,48.87803093815558,
+  1.975809665021118,48.87790650705719,
+  1.97670312231099,48.8776829288465,
+  1.977669886056208,48.87746875696516,
+  1.977430197980181,48.87711098266111,
+
+  1000,1000
+};
+
+static cell *navPlan = feuch1;
+
 #include "reporting.h"
 
 static char buffer[128];
+
+static float followingBearing = 10;
+static float cos_followingBearing, sin_followingBearing;
+static const cell *currentTarget = NULL;
+
+static bool lastPoint = false;
+
+static void setTarget(unsigned navPlan_index) {
+  if (wNavPnt == navPlan_index or lastPoint) return;
+  currentTarget = navPlan + navPlan_index;
+  const cell *nextTarget = currentTarget + 1;
+  if (nextTarget->lon > 400) {
+    lastPoint = true;
+    return; // done
+  }
+  wNavPnt = navPlan_index;
+  float discard;
+  distAndHeading(currentTarget->lon, currentTarget->lat, nextTarget->lon, nextTarget->lat,
+		 discard, followingBearing);
+  cos_followingBearing = cos(followingBearing);
+  sin_followingBearing = sin(followingBearing);
+}
+
+static void init() {
+  if (_inited) return;
+  //retrievew("wNavPnt", &wNavPnt);
+  setTarget(0);
+  //retrieve navPlan
+  _inited = true;
+}
 
 void test_nav() {
   float *p = lac - 1;
@@ -79,31 +124,33 @@ void test_nav() {
     float _lat1 = *++p;
     float lat1 = radians(_lat1);
     distAndHeading(lon0, lat0, lon1, lat1, d, bearing);
-    sprintf(buffer, "%f\t%f\t%f\t%f", _lon1, _lat1, d, bearing);
-    reporting_debug_print_serial(buffer);
+    sprintf(buffer, "%f\t%f\t%f\t%f", _lon1, _lat1, d, radians(bearing));
+    reporting_debug_print(buffer);
     _lon0 = _lon1;
     lon0 = lon1;
     lat0 = lat1;
   }
 }
 
-uint16_t magneticHeading;
-static FXOS8700 compass(ALMA_SDA, ALMA_SCL);
+float computeTargetHeading(float lon, float lat) {
+  init();
+  const cell *target = navPlan + wNavPnt;
+  float distanceM, bearing;
+  distAndHeading(lon, lat, target->lon, target->lat, distanceM, bearing);
+  
+  if (lastPoint) return bearing; // We turn around the last point
 
-static void getMagneticHeading() {
-  float mag[3];
-  compass.acquire_mag_data_uT(mag);
-  int heading = int(atan2(mag[1], mag[0]) * 180.0 / M_PI);
-  if (heading < 0) heading += 360;
-  magneticHeading = heading;
+ // dot product of unit vectors
+  float angle = cos_followingBearing * cos(bearing) + sin_followingBearing * sin(bearing);
+
+  // if cos < 0 ( angle between trajectory to next point and next
+  // point to the following point > +/- 90 degrees), we consider we
+  // have passed the point and go to the next one. This means this
+  // planner can't handle angles > 90 degrees, if you have a 90+
+  // degrees turn, you must decompose in into two less steep turns.
+  if (angle >= 0) return bearing;
+
+  setTarget(wNavPnt + 1);
+  distAndHeading(lon, lat, currentTarget->lon, currentTarget->lat, distanceM, bearing);
+  return bearing;
 }
-
-static void initProc() {
-  compass.mag_config();
-  for(;;) {
-    getMagneticHeading();
-    ThisThread::sleep_for(10000);
-  }
-}
-
-static AsyncStarter _init(initProc);

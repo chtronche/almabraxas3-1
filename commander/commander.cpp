@@ -19,6 +19,7 @@ static token _verbFinderData[] = {
   "read", 0x500,
   "convert", 0x600,
   "pi", 0x700,
+  "debug", 0x800,
   NULL, 0
 };
 
@@ -32,6 +33,8 @@ static token _nounFinderData[] = {
     "current", 0x5,
     "hysteresis", 0x6,
     "ng", 0x7,
+    "on", 0x8,
+    "off", 0x9,
     NULL, 0
 };
 
@@ -70,8 +73,10 @@ void processCommand(const char *command) {
   }
   if (bc) {
     ++badCommand;
-    sprintf(_x, ">%s", command);
-    reporting_debug_print_serial(_x);
+    if (reporting_serial_active) {
+      sprintf(_x, ">%s", command);
+      reporting_debug_print(_x);
+    }
     return;
   }
 
@@ -119,6 +124,14 @@ void processCommand(const char *command) {
 
   case 0x707: // ping (aka pi ng)
     ping.received(atoi(_next));
+    break;
+
+  case 0x808: // Debug on
+    reporting_serial_active = true;
+    break;
+    
+  case 0x809: // Debug off
+    reporting_serial_active = false;
     break;
     
   default:

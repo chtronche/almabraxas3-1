@@ -19,6 +19,8 @@ static void _initProc() {
   rfm69.promiscuous();
   rfm69.writeReg(REG_PALEVEL, 0x7f);
   rfm69.writeReg(REG_OCP, 0x0f);
+  rfm69.writeReg(REG_BITRATEMSB, RF_BITRATEMSB_100000);
+  rfm69.writeReg(REG_BITRATELSB, RF_BITRATELSB_100000);
 }
 
 static AsyncStarter _init(_initProc);

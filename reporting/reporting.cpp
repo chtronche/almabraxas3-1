@@ -10,6 +10,12 @@
 #include "powerManager.h"
 #include "reporting.h"
 
+bool reporting_serial_active = false;
+
+static void add8(char *&p, uint8_t v) {
+  *p++ = v;
+}
+
 static void add16(char *&p, uint16_t v) {
   *p++ = (v & 0xff00) >> 8;
   *p++ = v & 0xff;
@@ -29,15 +35,17 @@ void reporting_loop() {
   uint32_t clock = getClock();
   const char *comment = "<comment>";
   int rssi = getRSSI();
-  sprintf(buffer, "%ld V=%d %d I=%d %d P=%d MPPT=%d L=%d R=%d POW=%d PP=%d H=%d MH=%d %ld %s v%d %d",
-	  clock, voltage, voltageReading,
-	  current, currentReading,
-	  powerBudget, mppt_direction, leftPower, rightPower,
-	  voltage * current, peakPower,
-	  hysteresis, magneticHeading,
-	  badCommand, comment, rssi, ping.lost);
-  reporting_debug_print_serial(buffer);
-  
+  if (reporting_serial_active) {
+    sprintf(buffer, "%ld V=%d %d I=%d %d P=%d MPPT=%d L=%d R=%d POW=%d PP=%d H=%d MH=%d %ld %s v%d %d",
+	    clock, voltage, voltageReading,
+	    current, currentReading,
+	    powerBudget, mppt_direction, leftPower, rightPower,
+	    voltage * current, peakPower,
+	    hysteresis, magneticHeading,
+	    badCommand, comment, rssi, ping.lost);
+    reporting_debug_print(buffer);
+  }
+
   char *p = buffer;
   add32(p, clock);
   add16(p, voltage);
@@ -54,11 +62,8 @@ void reporting_loop() {
   add32(p, badCommand);
   add16(p, rssi);
   add16(p, ping.lost);
-  add16(p, magneticHeading);
+  add8(p, magneticHeading);
+  add32(p, uint32_t(latf * INT_MAX / 180.0));
+  add32(p, uint32_t(lonf * INT_MAX / 180.0));
   radioSendFrame(p - buffer, buffer);
 }
-
-void reporting_debug_print(const char *s) {
-  reporting_debug_print_serial(s);
-}
-

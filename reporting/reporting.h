@@ -7,7 +7,8 @@
 
 uint32_t getClock();
 
-void reporting_debug_print_serial(const char *);
+extern bool reporting_serial_active;
+
 void reporting_debug_print(const char *);
 
 const char *reporting_serial_read();

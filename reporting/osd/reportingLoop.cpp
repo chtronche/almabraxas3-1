@@ -18,7 +18,8 @@ uint32_t getClock() {
 
 static Serial pc(SERIAL_TX, SERIAL_RX);
 
-void reporting_debug_print_serial(const char *buffer) {
+void reporting_debug_print(const char *buffer) {
+  if (!reporting_serial_active) return;
   pc.printf(buffer);
   pc.printf("\n");
 }
