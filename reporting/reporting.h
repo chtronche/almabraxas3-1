@@ -15,6 +15,8 @@ const char *reporting_serial_read();
 void reporting_init();
 void reporting_loop();
 
+void setFlag(uint8_t flag, bool value);
+
 // Impl
 
 void radioSendFrame(unsigned len, const char *);

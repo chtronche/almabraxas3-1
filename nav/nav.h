@@ -8,6 +8,8 @@ extern uint8_t magneticHeading;
 
 extern float latf, lonf;
 
+extern uint16_t uNavPnt;
+
 //void test_nav();
 
 // From bearing

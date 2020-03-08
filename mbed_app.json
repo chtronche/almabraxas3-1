@@ -3,6 +3,11 @@
         "K64F": {
             "platform.stdio-baud-rate": 9600
         },
+	"NUCLEO_F446RE": {
+	    "target.features_add": ["STORAGE"],
+	    "target.components_add": ["FLASH", "FLASHIAP"],
+	    "target.restrict_size": "0x60000"
+	},
 	"*": {
 	    "platform.cpu-stats-enabled": true
 	}

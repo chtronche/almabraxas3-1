@@ -2,9 +2,10 @@
 
 #include "mbed.h"
 #include "nav.h"
+#include "NVStore.h"
 
 static bool _inited = false;
-uint16_t wNavPnt = -1;
+uint16_t uNavPnt = 0;
 
 static float radians(float degrees) {
   return degrees * M_PI / 180.0;
@@ -14,7 +15,7 @@ static float radians(float degrees) {
 //   return radians * 180.0 / M_PI;
 // }
 
-static float sqr(float x) { // Come on guys
+static inline float sqr(float x) { // Come on guys
   return x * x;
 }
 
@@ -88,14 +89,14 @@ static const cell *currentTarget = NULL;
 static bool lastPoint = false;
 
 static void setTarget(unsigned navPlan_index) {
-  if (wNavPnt == navPlan_index or lastPoint) return;
+  if (uNavPnt == navPlan_index or lastPoint) return;
   currentTarget = navPlan + navPlan_index;
   const cell *nextTarget = currentTarget + 1;
   if (nextTarget->lon > 400) {
     lastPoint = true;
     return; // done
   }
-  wNavPnt = navPlan_index;
+  setu("uNavPnt", &uNavPnt, navPlan_index);
   float discard;
   distAndHeading(currentTarget->lon, currentTarget->lat, nextTarget->lon, nextTarget->lat,
 		 discard, followingBearing);
@@ -105,8 +106,9 @@ static void setTarget(unsigned navPlan_index) {
 
 static void init() {
   if (_inited) return;
-  //retrievew("wNavPnt", &wNavPnt);
-  setTarget(0);
+  NVStore_init();
+  getu("uNavPnt", &uNavPnt);
+  //setTarget(0);
   //retrieve navPlan
   _inited = true;
 }
@@ -134,7 +136,7 @@ void test_nav() {
 
 float computeTargetHeading(float lon, float lat) {
   init();
-  const cell *target = navPlan + wNavPnt;
+  const cell *target = navPlan + uNavPnt;
   float distanceM, bearing;
   distAndHeading(lon, lat, target->lon, target->lat, distanceM, bearing);
   
@@ -150,7 +152,7 @@ float computeTargetHeading(float lon, float lat) {
   // degrees turn, you must decompose in into two less steep turns.
   if (angle >= 0) return bearing;
 
-  setTarget(wNavPnt + 1);
+  setTarget(uNavPnt + 1);
   distAndHeading(lon, lat, currentTarget->lon, currentTarget->lat, distanceM, bearing);
   return bearing;
 }

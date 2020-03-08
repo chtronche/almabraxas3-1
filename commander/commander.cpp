@@ -133,10 +133,12 @@ void processCommand(const char *command) {
 
   case 0x808: // Debug on
     reporting_serial_active = true;
+    setFlag(0, true);
     break;
     
   case 0x809: // Debug off
     reporting_serial_active = false;
+    setFlag(0, false);
     break;
     
   default:

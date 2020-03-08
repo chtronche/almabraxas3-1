@@ -3,14 +3,32 @@
 
 #include "mbed.h"
 
+#include "AsyncStarter.h"
 #include "commander.h"
 #include "main.h"
 #include "nav.h"
+#include "NVStore.h"
 #include "ping.h"
 #include "powerManager.h"
 #include "reporting.h"
 
 bool reporting_serial_active = false;
+
+static uint32_t _flags;
+
+static void initProc() {
+  NVStore_init();
+  getU("UFlags", &_flags);
+  reporting_serial_active = _flags & 1;
+}
+
+void setFlag(uint8_t flag, bool value) {
+  uint32_t mask = 1 << flag;
+  setU("UFlags", &_flags, (_flags & ~mask) | (mask & uint32_t(value)));
+  printf("flags = %lx\n", _flags);
+}
+
+static AsyncStarter _init(initProc);
 
 static void add8(char *&p, uint8_t v) {
   *p++ = v;
@@ -33,16 +51,17 @@ void reporting_loop() {
   processCommand(reporting_serial_read());
   processCommand(readRadioPacket());
   uint32_t clock = getClock();
-  const char *comment = "<comment>";
+  //const char *comment = "<comment>";
   int rssi = getRSSI();
   if (reporting_serial_active) {
-    sprintf(buffer, "%ld V=%d %d I=%d %d P=%d MPPT=%d L=%d R=%d POW=%d PP=%d H=%d MH=%d 0.0_0.0 v=%d ^=%d %ld",
+    sprintf(buffer, "%ld V=%d %d I=%d %d P=%d MPPT=%d L=%d R=%d POW=%d PP=%d H=%d MH=%d 0.0_0.0 v=%d ^=%d WP=%d %ld",
 	    clock, voltage, voltageReading,
 	    current, currentReading,
 	    powerBudget, mppt_direction, leftPower, rightPower,
 	    voltage * current, peakPower,
 	    hysteresis, magneticHeading,
 	    rssi, ping.lost,
+	    uNavPnt,
 	    badCommand
 	    );
     reporting_debug_print(buffer);
