@@ -26,6 +26,8 @@ void powerManager_setMotorPower(int16_t leftPower, int16_t rightPower);
 // Control
 
 extern bool mpptOn; // false to set powerBudget manually
+extern int8_t left_forcedPower; // -128 for cruise
+extern bool right_negativePower; // When forced
 
 //extern unsigned hysteresis;
 

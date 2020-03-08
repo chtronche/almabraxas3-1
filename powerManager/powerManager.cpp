@@ -2,13 +2,13 @@
 // (c) Ch. Tronche 2018 (ch@tronche.com)
 // MIT License
 
+#include <stdlib.h>
 #include <sys/types.h>
 
 #include "calibration.h"
 #include "LinearMapper.h"
 #include "nav.h"
 #include "powerManager.h"
-
 
 volatile uint8_t voltage; // in V/10
 volatile uint8_t current; // in A/10
@@ -17,6 +17,10 @@ volatile int16_t leftPower = 0, rightPower = 0;
 uint16_t powerBudget = 0; // in PWM units
 static uint16_t peakPowerBudget = 0; // in PWM unit
 
+bool mpptOn = false;
+int8_t left_forcedPower = false;
+bool right_negativePower = false;
+
 // ========================= dispatchPower ====================================
 
 static void powerManager_dispatchPower(
@@ -24,18 +28,23 @@ static void powerManager_dispatchPower(
     int16_t &leftPower, int16_t &rightPower) {
   (void)heading;
   (void)targetHeading;
-  if (!fixOk && mpptOn) { // We don't know where we are (and thus where to go)
+  if (!fixOk && mpptOn && left_forcedPower == -128) {
+    // We don't know where we are (and thus where to go)
     leftPower = rightPower = 0;
     return;
   }
-  leftPower = powerBudget / 2;
-  rightPower = powerBudget - leftPower;
+  
+  if (left_forcedPower != -128) {
+    leftPower = powerBudget * float(left_forcedPower) / 100;
+  } else
+    leftPower = powerBudget / 2;
+  rightPower = powerBudget - abs(leftPower);
+  if (right_negativePower) rightPower = -rightPower;
 }
 
 // ============================== getPowerBudget ================================
 
 //bool mpptOn = true;
-bool mpptOn = false;
 power_t peakPower;
 
 int8_t mppt_direction = 2; // start by increasing

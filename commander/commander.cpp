@@ -35,6 +35,7 @@ static token _nounFinderData[] = {
     "ng", 0x7,
     "on", 0x8,
     "off", 0x9,
+    "left", 0xa,
     NULL, 0
 };
 
@@ -121,6 +122,10 @@ void processCommand(const char *command) {
   // case 0x106: // set hysteresis
   //   powerManager_commanderSetHysteresis(_next);
   //   break;
+
+  case 0x10a: // set left
+    left_forcedPower = atoi(_next);
+    break;
 
   case 0x707: // ping (aka pi ng)
     ping.received(atoi(_next));

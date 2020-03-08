@@ -36,13 +36,15 @@ void reporting_loop() {
   const char *comment = "<comment>";
   int rssi = getRSSI();
   if (reporting_serial_active) {
-    sprintf(buffer, "%ld V=%d %d I=%d %d P=%d MPPT=%d L=%d R=%d POW=%d PP=%d H=%d MH=%d %ld %s v%d %d",
+    sprintf(buffer, "%ld V=%d %d I=%d %d P=%d MPPT=%d L=%d R=%d POW=%d PP=%d H=%d MH=%d 0.0_0.0 v=%d ^=%d %ld",
 	    clock, voltage, voltageReading,
 	    current, currentReading,
 	    powerBudget, mppt_direction, leftPower, rightPower,
 	    voltage * current, peakPower,
 	    hysteresis, magneticHeading,
-	    badCommand, comment, rssi, ping.lost);
+	    rssi, ping.lost,
+	    badCommand
+	    );
     reporting_debug_print(buffer);
   }
 
