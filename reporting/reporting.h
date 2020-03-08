@@ -24,4 +24,7 @@ char *readRadioPacket();
 
 int16_t getRSSI();
 
+void reporting_init();
+void reporting_serial_init();
+
 #endif // _REPORTING_H_

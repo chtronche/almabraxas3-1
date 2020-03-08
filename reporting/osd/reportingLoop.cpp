@@ -53,8 +53,8 @@ const char *reporting_serial_read() {
 
 //#include "navigator.h"
 
-void reporting_init() {
+void reporting_serial_init() {
   start = time(NULL);
   pc.baud(115200);
-  //test_nav();
+  printf("Serial up\n");
 }

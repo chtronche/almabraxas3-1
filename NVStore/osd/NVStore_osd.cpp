@@ -46,16 +46,18 @@ TDBStore nvStore(&flash);
 
 extern uint32_t __etext;
 
-static bool _inited = false;
-
 void NVStore_init() {
-  if (_inited) return;
   if (uint32_t(&__etext) >= FIRST_DB_BLOCK) error(".text smash FLASH db !");
   
-  printf("etext %lx (%d bytes left)\n", 
+  printf("\tetext %lx (%d bytes left)\n", 
 	 (uint32_t)&__etext, int(FIRST_DB_BLOCK - (uint32_t)&__etext));
   flash.init();
   int res = nvStore.init();
-  printf("nvStore init ok %d", res);
-  _inited = true;
+  printf("nvStore up error=%d\n", res);
+  KVStore::iterator_t i;
+  char buffer[16];
+  for(nvStore.iterator_open(&i); nvStore.iterator_next(i, buffer, 16) == MBED_SUCCESS;) {
+    printf("\t%s\n", buffer);
+  }
+  nvStore.iterator_close(i);
 }

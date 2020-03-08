@@ -106,7 +106,7 @@ static void serialCB(int events) {
   _e.set(1);
 }
 
-static const char *debugMsg = "$GPRMC,175504.000,A,4852.6779,N,00158.5257,E,0.77,3.49,060615,,,A*6B\n";
+//static const char *debugMsg = "$GPRMC,175504.000,A,4852.6779,N,00158.5257,E,0.77,3.49,060615,,,A*6B\n";
 
 static void initProc() {
   gps.printf("$PMTK314,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0*29\r\n"); // Only GPRMC messages
@@ -128,4 +128,9 @@ static void initProc() {
   }
 }
 
-static AsyncStarter _init(initProc);
+static AbstractThread _t;
+
+void gpsLoop_init() {
+  _t.run(initProc);
+  printf("gps up\n");
+}

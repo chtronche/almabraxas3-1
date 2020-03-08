@@ -4,7 +4,6 @@
 #include "nav.h"
 #include "NVStore.h"
 
-static bool _inited = false;
 uint16_t uNavPnt = 0;
 
 static float radians(float degrees) {
@@ -104,13 +103,13 @@ static void setTarget(unsigned navPlan_index) {
   sin_followingBearing = sin(followingBearing);
 }
 
-static void init() {
-  if (_inited) return;
-  NVStore_init();
+// NVStore_init first
+
+void nav_init() {
   getu("uNavPnt", &uNavPnt);
+  printf("nav up\n");
   //setTarget(0);
   //retrieve navPlan
-  _inited = true;
 }
 
 void test_nav() {
@@ -135,7 +134,6 @@ void test_nav() {
 }
 
 float computeTargetHeading(float lon, float lat) {
-  init();
   const cell *target = navPlan + uNavPnt;
   float distanceM, bearing;
   distAndHeading(lon, lat, target->lon, target->lat, distanceM, bearing);

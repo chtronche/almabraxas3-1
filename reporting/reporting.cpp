@@ -16,10 +16,12 @@ bool reporting_serial_active = false;
 
 static uint32_t _flags;
 
-static void initProc() {
-  NVStore_init();
+// Needs NVStore_init
+
+void reporting_init() {
   getU("UFlags", &_flags);
   reporting_serial_active = _flags & 1;
+  printf("reporting up\n");
 }
 
 void setFlag(uint8_t flag, bool value) {
@@ -27,8 +29,6 @@ void setFlag(uint8_t flag, bool value) {
   setU("UFlags", &_flags, (_flags & ~mask) | (mask & uint32_t(value)));
   printf("flags = %lx\n", _flags);
 }
-
-static AsyncStarter _init(initProc);
 
 static void add8(char *&p, uint8_t v) {
   *p++ = v;

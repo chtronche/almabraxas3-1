@@ -31,4 +31,7 @@ typedef struct {
   float lat, lon;
 } cell;
 
+void nav_init();
+void gpsLoop_init();
+
 #endif // _NAVIGATOR_H_
