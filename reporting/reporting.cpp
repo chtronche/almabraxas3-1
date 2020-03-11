@@ -5,6 +5,7 @@
 
 #include "AsyncStarter.h"
 #include "commander.h"
+#include "helmsman.h"
 #include "main.h"
 #include "nav.h"
 #include "NVStore.h"

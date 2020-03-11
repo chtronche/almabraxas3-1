@@ -7,44 +7,20 @@
 
 #include "calibration.h"
 #include "LinearMapper.h"
+#include "helmsman.h"
 #include "nav.h"
 #include "powerManager.h"
 
 volatile uint8_t voltage; // in V/10
 volatile uint8_t current; // in A/10
-volatile int16_t leftPower = 0, rightPower = 0;
 
 uint16_t powerBudget = 0; // in PWM units
 static uint16_t peakPowerBudget = 0; // in PWM unit
 
 bool mpptOn = false;
-int8_t left_forcedPower = false;
-bool right_negativePower = false;
-
-// ========================= dispatchPower ====================================
-
-static void powerManager_dispatchPower(
-    uint16_t powerBudget, uint8_t heading, uint8_t targetHeading, 
-    int16_t &leftPower, int16_t &rightPower) {
-  (void)heading;
-  (void)targetHeading;
-  if (!fixOk && mpptOn && left_forcedPower == -128) {
-    // We don't know where we are (and thus where to go)
-    leftPower = rightPower = 0;
-    return;
-  }
-  
-  if (left_forcedPower != -128) {
-    leftPower = powerBudget * float(left_forcedPower) / 100;
-  } else
-    leftPower = powerBudget / 2;
-  rightPower = powerBudget - abs(leftPower);
-  if (right_negativePower) rightPower = -rightPower;
-}
 
 // ============================== getPowerBudget ================================
 
-//bool mpptOn = true;
 power_t peakPower;
 
 int8_t mppt_direction = 2; // start by increasing
@@ -123,9 +99,5 @@ void powerManager_loop_cb(uint16_t v, uint16_t i) {
   current = _iMapper.convert(i);
   
   powerManager_getPowerBudget(voltage, current);
-  int16_t l, r;
-  powerManager_dispatchPower(powerBudget, 0, 0, l, r);
-  leftPower = l;
-  rightPower = r;
-  powerManager_setMotorPower(l, r);
+  helmsman_dispatchPower(powerBudget, 0, 0);
 }

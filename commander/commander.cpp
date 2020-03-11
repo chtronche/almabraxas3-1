@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "commander.h"
+#include "helmsman.h"
 #include "main.h"
 #include "ping.h"
 #include "powerManager.h"
@@ -35,21 +36,11 @@ static token _nounFinderData[] = {
     "ng", 0x7,
     "on", 0x8,
     "off", 0x9,
-    "left", 0xa,
+    "helm", 0xa,
     NULL, 0
 };
 
 static TokenFinder _nounFinder(_nounFinderData);
-
-static const char *startswith(const char *searched, const char *buffer) {
-  for(;;) {
-    if (!*searched) return buffer;
-    if (!*searched) return buffer;
-    if (*searched != *buffer) return NULL;
-    ++searched;
-    ++buffer;
-  }
-}
 
 char comment[17];
 
@@ -81,6 +72,7 @@ void processCommand(const char *command) {
     return;
   }
 
+  printf("command %x\n", (verb|noun));
   switch(verb|noun) {
   case 0x101: // Set comment
     strncpy((char *)comment, _next, 16);
@@ -124,7 +116,7 @@ void processCommand(const char *command) {
   //   break;
 
   case 0x10a: // set left
-    left_forcedPower = atoi(_next);
+    forcedSteering = atoi(_next);
     break;
 
   case 0x707: // ping (aka pi ng)
