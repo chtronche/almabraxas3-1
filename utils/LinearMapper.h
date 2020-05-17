@@ -9,12 +9,20 @@ class LinearMapper {
 
  public:
   LinearMapper() { }
-  LinearMapper(int from0, float to0, int from1, float to1) {computeFactor(from0, to0, from1, to1);}
-  void computeFactor(int from0, float to0, int from1, float to1);
+  LinearMapper(int from0, float to0, int from1, float to1);
+  void resetPoint(int from, float to, bool highPoint);
+  
   float convert(int v) const { return a * v + b; }
 
  public:
   float a, b;
+
+ private:
+  void computeFactor(int from0, float to0, int from1, float to1);
+
+ private:
+  int f0, f1;
+  float t0, t1;
 };
 
 #endif // _LINEAR_MAPPER_H_
