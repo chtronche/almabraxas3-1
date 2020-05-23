@@ -2,6 +2,7 @@
 // (c) Ch. Tronche 2018 (ch@tronche.com)
 // MIT License
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
 
@@ -84,8 +85,17 @@ static void powerManager_getPowerBudget(uint8_t voltage, uint8_t current) {
 
 // ================================= Loop =============================
 
-static LinearMapper _vMapper(875, 70, 3178, 200);
-static LinearMapper _iMapper(2515, 10, 2875, 100);
+// static LinearMapper _vMapper(875, 70, 3178, 200);
+// static LinearMapper _iMapper(2515, 10, 2875, 100);
+
+NVLinearMapper vMapper("iv0From", "fv0To", "iv1From", "fv1To");
+NVLinearMapper iMapper("ii0From", "fi0To", "ii1From", "fi1To");
+
+void powerManager_init() {
+  vMapper.retrieve();
+  iMapper.retrieve();
+  printf("powerManager up %f %f\n", vMapper.a, vMapper.b);
+}
 
 #include "adebug.h"
 #include "mbed.h"
@@ -95,8 +105,8 @@ uint16_t voltageReading, currentReading;
 void powerManager_loop_cb(uint16_t v, uint16_t i) {
   voltageReading = v;
   currentReading = i;
-  voltage = _vMapper.convert(v);
-  current = _iMapper.convert(i);
+  voltage = vMapper.convert(v);
+  current = iMapper.convert(i);
   
   powerManager_getPowerBudget(voltage, current);
   helmsman_dispatchPower(powerBudget, 0, 0);

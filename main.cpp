@@ -5,6 +5,7 @@
 #include "nav.h"
 #include "NVStore.h"
 #include "ping.h"
+#include "powerManager.h"
 #include "reporting.h"
 
 Ping ping;
@@ -15,6 +16,7 @@ int main()
   reporting_serial_init();
   NVStore_init();
   reporting_init();
+  powerManager_init();
   nav_init();
   gpsLoop_init();
   while(1) {

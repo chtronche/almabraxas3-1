@@ -4,6 +4,8 @@
 
 #include <flash_data.h>
 
+#include "NVStore.h"
+
 #define FIRST_DB_BLOCK (ADDR_FLASH_SECTOR_6)
 
 #define VIRTUAL_SECTOR_SIZE  (1024)
@@ -55,9 +57,28 @@ void NVStore_init() {
   int res = nvStore.init();
   printf("nvStore up error=%d\n", res);
   KVStore::iterator_t i;
-  char buffer[16];
-  for(nvStore.iterator_open(&i); nvStore.iterator_next(i, buffer, 16) == MBED_SUCCESS;) {
-    printf("\t%s\n", buffer);
+  char key[16];
+  uint32_t U;
+  for(nvStore.iterator_open(&i); nvStore.iterator_next(i, key, 16) == MBED_SUCCESS;) {
+    printf("\t%s\t", key);
+    switch(key[0]) {
+    case 'i':
+      printf("%d", NV<int16_t>::get(key));
+      break;
+
+    case 'U':
+      U = NV<uint32_t>::get(key);
+      printf("%ld %lxd", U, U);
+      break;
+
+    case 'f':
+      printf("%f", NV<float>::get(key));
+      break;
+
+    default:
+      break;
+    }
+    putchar('\n');
   }
   nvStore.iterator_close(i);
 }

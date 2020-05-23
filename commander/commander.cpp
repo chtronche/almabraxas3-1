@@ -37,6 +37,10 @@ static token _nounFinderData[] = {
     "on", 0x8,
     "off", 0x9,
     "helm", 0xa,
+    "v0", 0xb,
+    "v1", 0xc,
+    "i0", 0xd,
+    "i1", 0xe,
     NULL, 0
 };
 
@@ -49,6 +53,12 @@ char comment[17];
 static char _x[128];
 
 int nnn;
+
+static void strif(const char *_next, int16_t *i, float *f) {
+  char *end;
+  *i = strtol(_next, &end, 10);
+  *f = strtof(end, &end);
+}
 
 void processCommand(const char *command) {
   if (!command) return;
@@ -71,6 +81,9 @@ void processCommand(const char *command) {
     }
     return;
   }
+
+  int16_t i;
+  float f;
 
   printf("command %x\n", (verb|noun));
   switch(verb|noun) {
@@ -99,7 +112,7 @@ void processCommand(const char *command) {
   //   powerManager_readCalibration();
   //   break;
 
-  // case 0x104: // set calibration
+  // case 0x104: // set 
   //   if (!powerManager_commanderSetCalibration(_next)) ++badCommand;
   //   break;
 
@@ -117,6 +130,26 @@ void processCommand(const char *command) {
 
   case 0x10a: // set left
     forcedSteering = atoi(_next);
+    break;
+
+  case 0x10b: // set v0
+    strif(_next, &i, &f);
+    vMapper.resetPoint(i, f, false);
+    break;
+
+  case 0x10c: // set v1
+    strif(_next, &i, &f);
+    vMapper.resetPoint(i, f, true);
+    break;
+
+  case 0x10d: // set i0
+    strif(_next, &i, &f);
+    iMapper.resetPoint(i, f, false);
+    break;
+
+  case 0x10e: // set i1
+    strif(_next, &i, &f);
+    iMapper.resetPoint(i, f, true);
     break;
 
   case 0x707: // ping (aka pi ng)

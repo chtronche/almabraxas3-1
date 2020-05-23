@@ -95,7 +95,7 @@ static void setTarget(unsigned navPlan_index) {
     lastPoint = true;
     return; // done
   }
-  setu("uNavPnt", &uNavPnt, navPlan_index);
+  NV<uint16_t>::set("uNavPnt", &uNavPnt, navPlan_index);
   float discard;
   distAndHeading(currentTarget->lon, currentTarget->lat, nextTarget->lon, nextTarget->lat,
 		 discard, followingBearing);
@@ -106,7 +106,8 @@ static void setTarget(unsigned navPlan_index) {
 // NVStore_init first
 
 void nav_init() {
-  getu("uNavPnt", &uNavPnt);
+  //getu("uNavPnt", &uNavPnt);
+  NV<uint16_t>::get("uNavPnt", &uNavPnt);
   printf("nav up\n");
   //setTarget(0);
   //retrieve navPlan
