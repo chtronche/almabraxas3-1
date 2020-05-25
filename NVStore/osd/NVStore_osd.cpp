@@ -66,6 +66,10 @@ void NVStore_init() {
       printf("%d", NV<int16_t>::get(key));
       break;
 
+    case 'u':
+      printf("%d", NV<uint16_t>::get(key));
+      break;
+
     case 'U':
       U = NV<uint32_t>::get(key);
       printf("%ld %lxd", U, U);

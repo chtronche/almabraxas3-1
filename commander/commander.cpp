@@ -9,6 +9,7 @@
 #include "powerManager.h"
 #include "reporting.h"
 #include "TokenFinder.h"
+#include "vars.h"
 
 uint32_t badCommand = 0;
 
@@ -41,6 +42,7 @@ static token _nounFinderData[] = {
     "v1", 0xc,
     "i0", 0xd,
     "i1", 0xe,
+    "var", 0xf,
     NULL, 0
 };
 
@@ -59,6 +61,8 @@ static void strif(const char *_next, int16_t *i, float *f) {
   *i = strtol(_next, &end, 10);
   *f = strtof(end, &end);
 }
+
+static bool lastWasDot = false;
 
 void processCommand(const char *command) {
   if (!command) return;
@@ -84,8 +88,16 @@ void processCommand(const char *command) {
 
   int16_t i;
   float f;
+  char *p;
 
-  printf("command %x\n", (verb|noun));
+  if ((verb|noun) == 0x707) {
+    printf(".");
+    lastWasDot = true;
+  } else {
+    if (lastWasDot) printf("\n");
+    lastWasDot = false;
+    printf("command %x\n", (verb|noun));
+  }
   switch(verb|noun) {
   case 0x101: // Set comment
     strncpy((char *)comment, _next, 16);
@@ -150,6 +162,14 @@ void processCommand(const char *command) {
   case 0x10e: // set i1
     strif(_next, &i, &f);
     iMapper.resetPoint(i, f, true);
+    break;
+
+  case 0x10f: // set var
+    p = strchr(_next, ' ');
+    if (!p) break;
+    *p = '\0';
+    
+    vars_set(_next, p + 1);
     break;
 
   case 0x707: // ping (aka pi ng)

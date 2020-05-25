@@ -12,6 +12,7 @@ template<class T> struct NV {
   static void get(const char *key, T *var);
   static T get(const char *key);
   static void set(const char *key, T *var, T value);
+  static void retrieveTyped(const char *key, char **buffer);
 };
 
 void NVStore_init();

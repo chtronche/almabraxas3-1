@@ -30,6 +30,5 @@ extern bool mpptOn; // false to set powerBudget manually
 
 extern power_t peakPower;
 extern uint16_t voltageReading, currentReading;
-extern unsigned hysteresis;
 
 #endif // _POWER_MANAGER_H_

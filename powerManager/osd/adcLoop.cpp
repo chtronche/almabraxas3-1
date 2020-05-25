@@ -128,6 +128,8 @@ extern "C" void HAL_ADC_ErrorCallback(ADC_HandleTypeDef *hadc) {
   _adc_num = 12345678;
 }
 
+static uint16_t uADCms = 10;
+
 static void loop() {
   for(int n = 1;; n++) {
     uint32_t i, v, nn;
@@ -142,16 +144,15 @@ static void loop() {
     i /= nn;
     v /= nn;
     powerManager_loop_cb(v, i);
-    wait_ms(10);
+    wait_ms(uADCms);
   }
 }
 
 static Thread thread;
 
-static struct _initS {
-  _initS() {
-    _adc_init();
-    thread.start(loop);
-  }
-} _init;
-
+void powerManager_osd_init() {
+  vars_register("uADCms", &uADCms);
+  uADCms = NV<uint16_t>::get("uADCms");
+  _adc_init();
+  thread.start(loop);
+}

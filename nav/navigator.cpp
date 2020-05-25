@@ -3,6 +3,7 @@
 #include "mbed.h"
 #include "nav.h"
 #include "NVStore.h"
+#include "vars.h"
 
 uint16_t uNavPnt = 0;
 
@@ -107,6 +108,7 @@ static void setTarget(unsigned navPlan_index) {
 
 void nav_init() {
   //getu("uNavPnt", &uNavPnt);
+  vars_register("uNavPnt", &uNavPnt);
   NV<uint16_t>::get("uNavPnt", &uNavPnt);
   printf("nav up\n");
   //setTarget(0);

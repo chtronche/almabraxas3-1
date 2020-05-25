@@ -4,6 +4,7 @@
 
 #include "LinearMapper.h"
 #include "NVStore.h"
+#include "vars.h"
 
 void LinearMapper::computeFactor(int16_t from0, float to0, int16_t from1, float to1) {
   a = (to1 - to0) / (from1 - from0);
@@ -35,8 +36,15 @@ void NVLinearMapper::retrieve() {
   NV<int16_t>::get(_f0Name, &f0);
   NV<float>::get(_t0Name, &t0);
 
+  vars_register(_f0Name, &f0);
+  vars_register(_t0Name, &t0);
+
   NV<int16_t>::get(_f1Name, &f1);
   NV<float>::get(_t1Name, &t1);
+
+  vars_register(_f1Name, &f1);
+  vars_register(_t1Name, &t1);
+
   computeFactor(f0, t0, f1, t1);
 }
 

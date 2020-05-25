@@ -42,7 +42,8 @@ static event_callback_t _readCBE = _readCB; // Implicit attach I guess
 const char *reporting_serial_read() {
   if (_commandAvailable) {
     _commandAvailable = false;
-    char *end = (char *)memchr(_command, '\n', _bufferSize);
+    led(0, 1);
+   char *end = (char *)memchr(_command, '\n', _bufferSize);
     if (!end) end = _bufferEnd;
     *end = '\0';
     return _command;
@@ -50,8 +51,6 @@ const char *reporting_serial_read() {
   pc.read((uint8_t *)_command, _bufferSize, _readCBE, SERIAL_EVENT_RX_CHARACTER_MATCH, '\n');
   return NULL;
 }
-
-//#include "navigator.h"
 
 void reporting_serial_init() {
   start = time(NULL);

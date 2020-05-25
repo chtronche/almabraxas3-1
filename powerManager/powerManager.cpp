@@ -10,7 +10,9 @@
 #include "LinearMapper.h"
 #include "helmsman.h"
 #include "nav.h"
+#include "NVStore.h"
 #include "powerManager.h"
+#include "vars.h"
 
 volatile uint8_t voltage; // in V/10
 volatile uint8_t current; // in A/10
@@ -25,7 +27,7 @@ bool mpptOn = false;
 power_t peakPower;
 
 int8_t mppt_direction = 2; // start by increasing
-unsigned hysteresis = 200; // That is 2W
+unsigned _hysteresis = 200; // That is 2W
 
 static void reverseMPPTDirection() {
   mppt_direction = -mppt_direction;
@@ -36,9 +38,11 @@ static void reverseMPPTDirection() {
   peakPower = peakPowerBudget = 0;
 }
 
+static uint16_t _uvPT0 = 0;
+
 static void powerManager_getPowerBudget(uint8_t voltage, uint8_t current) {
   if (!mpptOn) return;
-  if (voltage < 100) {
+  if (voltage < _uvPT0) {
     powerBudget = peakPower = peakPowerBudget = 0;
     mppt_direction = 2;
     return;
@@ -71,7 +75,7 @@ static void powerManager_getPowerBudget(uint8_t voltage, uint8_t current) {
       // Hysteresis is 1.5 x V to protect from +1/-1 unit aliasing on the current reading (~100 mA)
       // At most, hysteresis is ~ 250 x 1.5 = 375, that is 3.75W, but
       // for peak power, we're around 18V, so it's ~2.7W
-      if (power < peakPower - hysteresis) {
+      if (power < peakPower - _hysteresis) {
       // We are out of the maximum power window in either direction,
       // so we change.
       reverseMPPTDirection();
@@ -91,7 +95,16 @@ static void powerManager_getPowerBudget(uint8_t voltage, uint8_t current) {
 NVLinearMapper vMapper("iv0From", "fv0To", "iv1From", "fv1To");
 NVLinearMapper iMapper("ii0From", "fi0To", "ii1From", "fi1To");
 
+extern void powerManager_osd_init();
+
 void powerManager_init() {
+  powerManager_osd_init();
+  _uvPT0 = NV<uint16_t>::get("uvPT0");
+  vars_register("uvPT0", &_uvPT0);
+
+  _hysteresis = NV<uint16_t>::get("uPowHys");
+  vars_register("uPowHys", &_hysteresis);
+  
   vMapper.retrieve();
   iMapper.retrieve();
   printf("powerManager up %f %f\n", vMapper.a, vMapper.b);
