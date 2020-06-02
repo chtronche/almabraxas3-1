@@ -5,7 +5,7 @@
         },
 	"NUCLEO_F446RE": {
 	    "target.features_add": ["STORAGE"],
-	    "target.components_add": ["FLASH", "FLASHIAP"],
+	    "target.components_add": ["FLASH", "FLASHIAP","SD"],
 	    "target.restrict_size": "0x60000"
 	},
 	"*": {

@@ -146,22 +146,22 @@ void processCommand(const char *command) {
 
   case 0x10b: // set v0
     strif(_next, &i, &f);
-    vMapper.resetPoint(i, f, false);
+    const_cast<NVLinearMapper &>(vMapper).resetPoint(i, f, false);
     break;
 
   case 0x10c: // set v1
     strif(_next, &i, &f);
-    vMapper.resetPoint(i, f, true);
+    const_cast<NVLinearMapper &>(vMapper).resetPoint(i, f, true);
     break;
 
   case 0x10d: // set i0
     strif(_next, &i, &f);
-    iMapper.resetPoint(i, f, false);
+    const_cast<NVLinearMapper &>(iMapper).resetPoint(i, f, false);
     break;
 
   case 0x10e: // set i1
     strif(_next, &i, &f);
-    iMapper.resetPoint(i, f, true);
+    const_cast<NVLinearMapper &>(iMapper).resetPoint(i, f, true);
     break;
 
   case 0x10f: // set var

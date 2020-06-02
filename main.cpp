@@ -7,6 +7,7 @@
 #include "ping.h"
 #include "powerManager.h"
 #include "reporting.h"
+#include "sd.h"
 
 Ping ping;
 
@@ -15,6 +16,7 @@ int main()
   chenillard();
   reporting_serial_init();
   NVStore_init();
+  sd_init();
   reporting_init();
   powerManager_init();
   nav_init();

@@ -45,7 +45,7 @@ void NVLinearMapper::retrieve() {
   vars_register(_f1Name, &f1);
   vars_register(_t1Name, &t1);
 
-  computeFactor(f0, t0, f1, t1);
+  const_cast<NVLinearMapper &>(*this).computeFactor(f0, t0, f1, t1);
 }
 
 void NVLinearMapper::resetPoint(int16_t from, float to, bool highPoint) {
@@ -56,5 +56,5 @@ void NVLinearMapper::resetPoint(int16_t from, float to, bool highPoint) {
     NV<int16_t>::set(_f0Name, &f0, from);
     NV<float>::set(_t0Name, &t0, to);
   }
-  computeFactor(f0, t0, f1, f1);
+  const_cast<NVLinearMapper &>(*this).computeFactor(f0, t0, f1, f1);
 }

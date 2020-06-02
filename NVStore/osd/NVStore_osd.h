@@ -4,7 +4,6 @@
 #include "mbed.h"
 
 #include <TDBStore.h>
-
 extern TDBStore nvStore;
 
 #endif // _NVSTORE_OSD_H_

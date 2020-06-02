@@ -9,30 +9,30 @@
 #include "NVStore.h"
 #include "vars.h"
 
-typedef std::pair<const char *,void *> _cell;
+typedef std::pair<const char *,volatile void *> _cell;
 
 static std::vector<_cell> _storage;
 
-void vars_register(const char *key, void *v) {
+void vars_register(const char *key, volatile void *v) {
   _storage.push_back(_cell(key, v));
 }
 
-static char *copyVar(char *buffer, char type_, void *p) {
+static char *copyVar(char *buffer, char type_, volatile void *p) {
   switch(type_) {
   case 'i':
-    sprintf(buffer, "%d", *static_cast<int16_t *>(p));
+    sprintf(buffer, "%d", *static_cast<volatile int16_t *>(p));
     break;
 
   case 'u':
-    sprintf(buffer, "%d", *static_cast<uint16_t *>(p));
+    sprintf(buffer, "%d", *static_cast<volatile uint16_t *>(p));
     break;
 
   case 'U':
-    sprintf(buffer, "%8lx", *static_cast<uint32_t *>(p));
+    sprintf(buffer, "%8lx", *static_cast<volatile uint32_t *>(p));
     break;
 
   case 'f':
-    sprintf(buffer, "%f", *static_cast<float *>(p));
+    sprintf(buffer, "%f", *static_cast<volatile float *>(p));
     break;
 
   default:
@@ -70,7 +70,7 @@ static _cell *_getCell(const char *key) {
 void vars_set(const char *key, const char *v) {
   _cell *p = _getCell(key);
   if (!p) return;
-  void *varp = p->second;
+  void *varp = const_cast<void *>(p->second);
   switch(*key) {
   case 'i':
     NV<int16_t>::set(key, static_cast<int16_t *>(varp), atoi(v));

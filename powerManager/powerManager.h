@@ -8,7 +8,7 @@
 #include <sys/types.h>
 #include "LinearMapper.h"
 
-typedef uint16_t power_t;
+typedef uint32_t power_t;
 
 void powerManager_init();
 void powerManager_loop_cb(uint16_t v, uint16_t i);
@@ -18,7 +18,7 @@ extern volatile uint8_t current; // in A/10
 extern int8_t mppt_direction;    // +2 if increasing, -2 if decreasing
 extern  uint16_t powerBudget;     // in PWM unit
 
-extern NVLinearMapper vMapper, iMapper;
+extern volatile NVLinearMapper vMapper, iMapper;
 
 // Control
 

@@ -19,12 +19,21 @@ static const PinName SAMPLER_CURRENT_PIN = PC_1;
 static const PinName PWM_LEFT = PA_0;
 static const PinName PWM_RIGHT = PA_1;
 
-static const PinName RFM69_MOSI = PB_15;
-static const PinName RFM69_MISO = PB_14;
-static const PinName RFM69_SCLK = PB_13;
+static const PinName ALMA_MOSI_1 = PB_15; // SPI2, clk = PCKL1
+static const PinName ALMA_MISO_1 = PB_14;
+static const PinName ALMA_SCLK_1 = PB_13;
+
+static const PinName RFM69_MOSI = ALMA_MOSI_1;
+static const PinName RFM69_MISO = ALMA_MISO_1;
+static const PinName RFM69_SCLK = ALMA_SCLK_1;
 static const PinName RFM69_CS = PB_1;
 static const PinName RFM69_INT = PA_9;
 static const PinName RFM69_RST = PC_7;
+
+static const PinName SD_MOSI = PB_5;
+static const PinName SD_MISO = PB_4;
+static const PinName SD_SCK = PB_3; // SPI1, clk = PCKL2 [ou 3 (ALT), clk = PCKL1]
+static const PinName SD_CS = PB_10;
 
 static const PinName ALMA_SCL = PB_8;
 static const PinName ALMA_SDA = PB_9;

@@ -7,7 +7,7 @@
 
 void vars_init();
 
-void vars_register(const char *key, void *v);
+void vars_register(const char *key, volatile void *v);
 void vars_set(const char *key, const char *v);
 
 char *vars_get_random_str(char *buffer, unsigned bufsize);

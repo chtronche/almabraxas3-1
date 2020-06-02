@@ -14,7 +14,7 @@ class LinearMapper {
   LinearMapper(int from0, float to0, int from1, float to1);
   virtual void resetPoint(int from, float to, bool highPoint);
   
-  float convert(int v) const { return a * v + b; }
+  float convert(int v) const { return a * v + b; };
 
  public:
   float a, b;

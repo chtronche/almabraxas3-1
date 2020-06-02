@@ -1,4 +1,6 @@
+#include "NVStore.h"
 #include "powerManager.h"
+#include "vars.h"
 #include "wiring.h"
 
 #include "mbed.h"
@@ -128,10 +130,10 @@ extern "C" void HAL_ADC_ErrorCallback(ADC_HandleTypeDef *hadc) {
   _adc_num = 12345678;
 }
 
-static uint16_t uADCms = 10;
+static volatile uint16_t uADCms;
 
 static void loop() {
-  for(int n = 1;; n++) {
+  for(;;) {
     uint32_t i, v, nn;
     CriticalSectionLock::enable();
     i = _adc_i;
@@ -151,7 +153,7 @@ static void loop() {
 static Thread thread;
 
 void powerManager_osd_init() {
-  vars_register("uADCms", &uADCms);
+  vars_register("uADCms", const_cast<uint16_t *>(&uADCms));
   uADCms = NV<uint16_t>::get("uADCms");
   _adc_init();
   thread.start(loop);

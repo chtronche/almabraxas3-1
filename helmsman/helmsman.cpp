@@ -19,6 +19,7 @@ int16_t leftPower = 0, rightPower = 0;
 static const int deadband = 15;
 
 static inline int adjust_forBlueESC(int pwm) {
+  if (!pwm) return 1500;
   return 1500 + (pwm < 0 ? MAX(-400, pwm - deadband) : MIN(400, pwm + deadband));
 }
 
