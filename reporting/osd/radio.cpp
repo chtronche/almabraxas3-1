@@ -3,6 +3,7 @@
 #include "RFM69.h"
 #include "RFM69registers.h"
 
+#include "adebug.h"
 #include "crc.h"
 #include "wiring.h"
 
@@ -25,14 +26,22 @@ static void _initProc() {
 
 static AsyncStarter _init(_initProc);
 
+void radioCheck() {
+  printf("radioCheck %x\n", rfm69.readReg(REG_BITRATEMSB));
+}
+
 void radioSendFrame(unsigned len, const char *s) {
+  led(0x4, 0xc);
   _init.ready();
   if (len < 58) {
     ((char *)s)[len] = computeCRC(len, s);
     ++len;
   }
+  led(0x8, 0xc);
   rfm69.send(99, s, len, false);
+  led(0xc, 0xc);
   rfm69.receiveDone();
+  led(0, 0xc);
 }
 
 static char buffer[RF69_MAX_DATA_LEN + 1];

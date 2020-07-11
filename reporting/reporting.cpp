@@ -56,7 +56,7 @@ static char *_dump_vars(char *buffer) {
   return vars_get_random_str(buffer, 50);
 }
 
-extern power_t xpower, ypower;
+extern void radioCheck();
 
 void reporting_loop() {
   char buffer[256];
@@ -70,8 +70,8 @@ void reporting_loop() {
 	    clock, voltage, voltageReading,
 	    current, currentReading,
 	    powerBudget, mppt_direction, leftPower, rightPower,
-	    xpower, peakPower,
-	    ypower, magneticHeading,
+	    -1, peakPower,
+	    heading, magneticHeading,
 	    latf, lonf,
 	    rssi, ping.lost,
 	    uNavPnt,
@@ -85,6 +85,7 @@ void reporting_loop() {
     _nextClock = clock + 10;
     p = _dump_vars(buffer);
     printf("vars:\t%s\n", buffer);
+    radioCheck();
   } else {
     add32(p, clock); // 4
     add16(p, voltage); // 6
@@ -95,9 +96,9 @@ void reporting_loop() {
     add16(p, mppt_direction); // 16
     add16(p, leftPower); // 18
     add16(p, rightPower); // 20
-    add32(p, xpower); // 24 (formerly voltage * current)
+    add32(p, -1); // 24 (formerly voltage * current)
     add32(p, peakPower); // 28
-    add16(p, ypower); // 30
+    add16(p, heading); // 30
     add32(p, badCommand); // 34
     add16(p, rssi); // 36
     add16(p, ping.lost); // 38

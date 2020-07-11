@@ -27,15 +27,13 @@ bool mpptOn = true;
 
 power_t peakPower;
 
-power_t xpower, ypower;
-
 int8_t mppt_direction = 2; // start by increasing
 unsigned _hysteresis = 200; // That is 2W
 
 static void reverseMPPTDirection() {
   mppt_direction = -mppt_direction;
- // We go back to throttle giving the best power we ever had
-  powerBudget = peakPowerBudget;
+  // We go back to throttle giving the best power we ever had
+  // powerBudget = peakPowerBudget;
   // We reset peak power, so we'll measure power at previous peak
   // power throttle on next step.
   peakPower = peakPowerBudget = 0;
@@ -83,8 +81,6 @@ static void powerManager_getPowerBudget(uint8_t voltage, uint8_t current) {
 	if (power < comp) {
 	  // We are out of the maximum power window in either direction,
 	  // so we change.
-	  xpower = power;
-	  ypower = comp;
 	  reverseMPPTDirection();
 	}
       }

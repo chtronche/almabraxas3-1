@@ -4,6 +4,7 @@
 extern bool fixOk;
 extern uint32_t gpsClock;
 
+extern uint16_t heading;
 extern uint8_t magneticHeading;
 
 extern float latf, lonf;
