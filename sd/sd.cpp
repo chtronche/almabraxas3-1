@@ -13,7 +13,6 @@ static SDBlockDevice blockDevice(PB_5, PB_4, PB_3, PB_10, 5625000, 1);
 static FATFileSystem fileSystem("fs");
 
 void sd_init() {
-  printf("SPI = %x %x %x\n", spi_get_peripheral_name(PB_5, PB_4, PB_3), SPI_1, SPI_3);
   int err = fileSystem.mount(&blockDevice);
   printf("sd mount res = %d\n", err);
 }

@@ -3,6 +3,7 @@
 #include "AsyncStarter.h"
 #include "mbed.h"
 #include "nav.h"
+#include "sdlog.h"
 #include "wiring.h"
 
 static Serial gps(GPS_TX, GPS_RX, 9600);
@@ -67,6 +68,7 @@ static float convertDeg(const char *p, bool _3digit, bool neg) {
 }
 
 static void processGPSMessage(char *msg) {
+  sdlog("gps", msg);
   splitMessage(msg);
   // for(int i = 0; i <= 12; i++)
   //   printf("%d_%s ", i, _message[i]);
