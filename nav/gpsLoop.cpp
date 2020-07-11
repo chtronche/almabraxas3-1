@@ -70,9 +70,6 @@ static float convertDeg(const char *p, bool _3digit, bool neg) {
 static void processGPSMessage(char *msg) {
   sdlog("gps", msg);
   splitMessage(msg);
-  // for(int i = 0; i <= 12; i++)
-  //   printf("%d_%s ", i, _message[i]);
-  // printf("\n");
   if (strcmp(_message[0], "$GPRMC")) return;
   fixOk = _message[2][0] == 'A';
   if (!fixOk) {
@@ -120,9 +117,7 @@ static void initProc() {
     _e.wait_any(1);
     if (_events & SERIAL_EVENT_RX_CHARACTER_MATCH) {
       char *p = strchr(_gpsMessage, '\r');
-      *p = '\n';
-      // strcpy(_gpsMessage, debugMsg);
-      //printf(_gpsMessage);
+      *p = '\0';
       processGPSMessage(_gpsMessage);
     }
     bearing_loop(latf, lonf);

@@ -1,6 +1,7 @@
 #include <stdio.h>
 
 #include "adebug.h"
+#include "alma_clock.h"
 #include "mbed.h"
 #include "nav.h"
 #include "NVStore.h"
@@ -14,6 +15,7 @@ Ping ping;
 
 int main()
 {
+  alma_clock_init();
   chenillard();
   reporting_serial_init();
   NVStore_init();
@@ -24,6 +26,7 @@ int main()
   nav_init();
   gpsLoop_init();
   while(1) {
+    alma_clock_advance();
     reporting_loop();
     wait_ms(100);
   }

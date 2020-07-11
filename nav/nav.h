@@ -3,6 +3,7 @@
 
 extern bool fixOk;
 extern uint32_t gpsClock;
+extern uint8_t year, month, day, hour, min, sec;
 
 extern uint16_t heading;
 extern uint8_t magneticHeading;

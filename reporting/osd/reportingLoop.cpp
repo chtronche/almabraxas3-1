@@ -5,12 +5,6 @@
 
 #include "reporting.h"
 
-static uint32_t start;
-
-uint32_t getClock() {
-    return time(NULL) - start;
-}
-
 //------------------------------------
 // Hyperterminal configuration
 // 9600 bauds, 8-bit data, no parity
@@ -53,7 +47,6 @@ const char *reporting_serial_read() {
 }
 
 void reporting_serial_init() {
-  start = time(NULL);
   pc.baud(115200);
   printf("Serial up\n");
 }

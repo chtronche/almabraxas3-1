@@ -3,6 +3,7 @@
 
 #include "mbed.h"
 
+#include "alma_clock.h"
 #include "AsyncStarter.h"
 #include "commander.h"
 #include "helmsman.h"
@@ -62,12 +63,11 @@ void reporting_loop() {
   char buffer[256];
   processCommand(reporting_serial_read());
   processCommand(readRadioPacket());
-  uint32_t clock = getClock();
   //const char *comment = "<comment>";
   int rssi = getRSSI();
   if (reporting_serial_active) {
     sprintf(buffer, "%ld V=%d %d I=%d %d P=%d MPPT=%d L=%d R=%d POW=%d PP=%d H=%d MH=%d %f_%f v=%d ^=%d WP=%d %ld",
-	    clock, voltage, voltageReading,
+	    alma_clock, voltage, voltageReading,
 	    current, currentReading,
 	    powerBudget, mppt_direction, leftPower, rightPower,
 	    -1, peakPower,
@@ -81,13 +81,12 @@ void reporting_loop() {
   }
 
   char *p = buffer;
-  if (clock >= _nextClock) {
-    _nextClock = clock + 10;
+  if (alma_clock >= _nextClock) {
+    _nextClock = alma_clock + 10;
     p = _dump_vars(buffer);
-    printf("vars:\t%s\n", buffer);
     radioCheck();
   } else {
-    add32(p, clock); // 4
+    add32(p, alma_clock); // 4
     add16(p, voltage); // 6
     add16(p, voltageReading); // 8
     add16(p, current); // 10

@@ -5,8 +5,6 @@
 #ifndef _REPORTING_H_
 #define _REPORTING_H_
 
-uint32_t getClock();
-
 extern bool reporting_serial_active;
 
 void reporting_debug_print(const char *);
