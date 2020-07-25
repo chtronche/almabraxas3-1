@@ -7,6 +7,7 @@ extern uint8_t year, month, day, hour, min, sec;
 
 extern uint16_t heading;
 extern uint8_t magneticHeading;
+extern volatile uint8_t targetHeading;
 
 extern float latf, lonf;
 

@@ -80,9 +80,10 @@ void noFix() {
 
 uint16_t heading;
 bool headingIsMagnetic;
+volatile uint8_t targetHeading;
 
 void bearing_loop(float lat, float lon) {
   computeBearing(lat, lon, &heading, &headingIsMagnetic);
-  float targetHeading = computeTargetHeading(lat, lon);
-  //heading = XXX;
+  float targetHeading_ = computeTargetHeading(lat, lon);
+  targetHeading = uint8_t(targetHeading_ * 360.0 / 256);
 }

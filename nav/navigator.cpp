@@ -144,14 +144,14 @@ float computeTargetHeading(float lon, float lat) {
   if (lastPoint) return bearing; // We turn around the last point
 
  // dot product of unit vectors
-  float angle = cos_followingBearing * cos(bearing) + sin_followingBearing * sin(bearing);
+  float cos_angle = cos_followingBearing * cos(bearing) + sin_followingBearing * sin(bearing);
 
   // if cos < 0 ( angle between trajectory to next point and next
   // point to the following point > +/- 90 degrees), we consider we
   // have passed the point and go to the next one. This means this
   // planner can't handle angles > 90 degrees, if you have a 90+
   // degrees turn, you must decompose in into two less steep turns.
-  if (angle >= 0) return bearing;
+  if (cos_angle >= 0) return bearing;
 
   setTarget(uNavPnt + 1);
   distAndHeading(lon, lat, currentTarget->lon, currentTarget->lat, distanceM, bearing);

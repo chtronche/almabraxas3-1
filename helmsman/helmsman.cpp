@@ -1,5 +1,6 @@
 #include <stdlib.h>
 
+#include "alma_math.h"
 #include "helmsman.h"
 #include "nav.h"
 #include "powerManager.h"
@@ -12,9 +13,6 @@ int16_t leftPower = 0, rightPower = 0;
 // Blue ESC:
 // 0 is 1500 us with a +/- 25 dead band
 // 1900 is max, 1400 is full reverse
-
-#define MAX(a,b) ((a) >= (b) ? (a) : (b))
-#define MIN(a,b) ((a) < (b) ? (a) : (b))
 
 static const int deadband = 15;
 

@@ -1,0 +1,17 @@
+alma_clock
+voltage
+voltageReading
+current
+currentReading
+powerBudget
+mppt_direction
+leftPower
+rightPower
+peakPower
+heading
+magneticHeading
+targetHeading
+lonf, latf
+ping.lost
+(+vars uNavPnt)
+badCommand

@@ -22,6 +22,7 @@ static token _verbFinderData[] = {
   "convert", 0x600,
   "pi", 0x700,
   "debug", 0x800,
+  "get", 0x900,
   NULL, 0
 };
 
@@ -43,6 +44,7 @@ static token _nounFinderData[] = {
     "i0", 0xd,
     "i1", 0xe,
     "var", 0xf,
+    "report_desc", 0x10,
     NULL, 0
 };
 
@@ -186,6 +188,10 @@ void processCommand(const char *command) {
     setFlag(0, false);
     break;
     
+  case 0x910: // get report_desc
+    reporting_get_description(atoi(_next));
+    break;
+
   default:
     ++badCommand;
   }

@@ -4,6 +4,7 @@
 #include "RFM69registers.h"
 
 #include "adebug.h"
+#include "alma_math.h"
 #include "crc.h"
 #include "wiring.h"
 
@@ -45,8 +46,6 @@ void radioSendFrame(unsigned len, const char *s) {
 }
 
 static char buffer[RF69_MAX_DATA_LEN + 1];
-
-#define MIN(a, b) ((a) > (b) ? (b) : (a))
 
 char *readRadioPacket() {
   _init.ready();
