@@ -190,10 +190,11 @@ void reporting_loop() {
     add16(p, heading); // 30
     add8(p, magneticHeading); // 39
     add8(p, targetHeading); // 40
-    add32(p, uint32_t(lonf * INT_MAX / 180.0)); // 48
-    //add16(p, rssi); // 36
-    add16(p, ping.lost); // 38
     add16(p, uNavPnt);
+    add32(p, uint32_t(latf * INT_MAX / 180.0)); // 48
+    add32(p, uint32_t(lonf * INT_MAX / 180.0)); // 48
+    add16(p, _rssi); // 36
+    add16(p, ping.lost); // 38
     add32(p, badCommand); // 34
   }
 
