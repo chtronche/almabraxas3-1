@@ -84,6 +84,7 @@ volatile uint8_t targetHeading;
 
 void bearing_loop(float lat, float lon) {
   computeBearing(lat, lon, &heading, &headingIsMagnetic);
+  if (lat > 95) return;
   float targetHeading_ = computeTargetHeading(lat, lon);
   targetHeading = uint8_t(targetHeading_ * 360.0 / 256);
 }

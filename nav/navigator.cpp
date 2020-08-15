@@ -3,6 +3,7 @@
 #include "mbed.h"
 #include "nav.h"
 #include "NVStore.h"
+#include "sdlog.h"
 #include "vars.h"
 
 uint16_t uNavPnt = 0;
@@ -140,6 +141,10 @@ float computeTargetHeading(float lon, float lat) {
   const cell *target = navPlan + uNavPnt;
   float distanceM, bearing;
   distAndHeading(lon, lat, target->lon, target->lat, distanceM, bearing);
+  char buffer[128];
+  sprintf(buffer, "lon=%f\tlat=%f\ttlon=%f\ttlat=%f\td=%f\tH=%d",
+	  lon, lat, target->lon, target->lat, distanceM, int(bearing));
+  sdlog("nav", buffer);
   
   if (lastPoint) return bearing; // We turn around the last point
 

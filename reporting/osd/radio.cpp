@@ -7,6 +7,7 @@
 #include "alma_math.h"
 #include "crc.h"
 #include "wiring.h"
+#include "sdlog.h"
 
 RFM69 rfm69(RFM69_MOSI, RFM69_MISO, RFM69_SCLK, RFM69_CS, RFM69_INT);
 static DigitalOut reset(RFM69_RST);
@@ -27,8 +28,14 @@ static void _initProc() {
 
 static AsyncStarter _init(_initProc);
 
-void radioCheck() {
-  printf("radioCheck %x\n", rfm69.readReg(REG_BITRATEMSB));
+static uint32_t _nextCheck = 0;
+
+void radioCheck(uint32_t clock) {
+  if (clock < _nextCheck) return;
+  _nextCheck = clock + 600;
+  char buffer[128];
+  sprintf(buffer, "radioCheck %x\n", rfm69.readReg(REG_BITRATEMSB));
+  sdlog("radioCheck", buffer);
 }
 
 void radioSendFrame(unsigned len, const char *s) {

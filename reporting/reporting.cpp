@@ -49,7 +49,7 @@ static char *_dump_vars(char *buffer) {
   return vars_get_random_str(buffer, 50);
 }
 
-extern void radioCheck();
+extern void radioCheck(uint32_t clock);
 
 static uint8_t _rssi;
 static uint32_t _lat, _lon;
@@ -175,7 +175,6 @@ void reporting_loop() {
   if (alma_clock >= _nextClock) {
     _nextClock = alma_clock + 10;
     p = _dump_vars(buffer);
-    radioCheck();
   } else {
     add32(p, alma_clock); // 4
     add16(p, voltage); // 6
@@ -198,6 +197,7 @@ void reporting_loop() {
     add32(p, badCommand); // 34
   }
 
+  radioCheck(alma_clock);
   if (p - buffer > 60)
     reporting_debug_print("Radio frame too long");
   else 
