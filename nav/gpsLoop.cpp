@@ -71,6 +71,12 @@ static void processGPSMessage(char *msg) {
   sdlog("gps", msg);
   splitMessage(msg);
   if (strcmp(_message[0], "$GPRMC")) return;
+
+  const char *date = _message[9];
+  const char *time = _message[1];
+
+  sdlog_checkClock(date, time);
+
   fixOk = _message[2][0] == 'A';
   if (!fixOk) {
     coordMutex.lock();
@@ -79,8 +85,6 @@ static void processGPSMessage(char *msg) {
     return;
   }
 
-  const char *date = _message[9];
-  const char *time = _message[1];
   gpsClock = ((nbJours(d2(date), d2(date + 2), 2000 + d2(date + 4)) - _epoch0) * 86400
 		  + d2(time) * 3600 + d2(time + 2) * 60 + d2(time + 4));
 

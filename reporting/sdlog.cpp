@@ -10,10 +10,14 @@ static FILE *logFile = NULL;
 static uint32_t _nextTry = 0;
 static uint32_t _tryDelay = 32;
 
+static Mutex _lock;
+
 static void _close() {
   if (!logFile) return;
+  _lock.lock();
   fclose(logFile);
   logFile = NULL;
+  _lock.unlock();
 }
 
 static uint8_t logDirComponent[] = { 0, 0, 0, 255 }; // year / month / day / sentinel
@@ -50,6 +54,8 @@ void _pathBuilder::strcpy(const char *s) {
   ::strcpy(bp, s);
   bp = strchr(bp, '\0');
 }
+
+////////////////////////////////////////////////////////////////////////////////
 
 static void _findLastLogFile() {
   printf("_findLastLogFile\n");
@@ -101,6 +107,8 @@ static void _openLogFile() {
   logFile = fopen(pb.buffer, "w+");
 }
 
+////////////////////////////////////////////////////////////////////////////////
+
 static void init() {
   if (logFile) return;
   if (alma_clock < _nextTry) return;
@@ -116,7 +124,34 @@ static void init() {
   }
 }
 
-static Mutex _lock;
+////////////////////////////////////////////////////////////////////////////////
+
+static int fast_x10[] = { 0, 10, 20, 30, 40, 50, 60, 70, 80, 90 };
+
+static inline uint8_t _fast_atoi(const char *p) {
+  return fast_x10[p[0] - '0'] + p[1] - '0';
+}
+
+static bool _modified(const char *s, uint8_t *component) {
+  uint8_t n = _fast_atoi(s);
+  if (n == *component) return false;
+  *component = n;
+  return true;
+}
+
+void sdlog_checkClock(const char *gpsDate, const char *gpsTime) {
+  if (*gpsDate <= '0' || *gpsDate >= '9') return;
+
+  bool modified = false;
+  modified |= _modified(gpsDate + 4, logDirComponent);
+  modified |= _modified(gpsDate + 2, logDirComponent + 1);
+  modified |= _modified(gpsDate, logDirComponent + 2);
+  modified |= _modified(gpsTime, &_hour);
+  
+  if (modified) _close();
+}
+
+////////////////////////////////////////////////////////////////////////////////
 
 void sdlog(const char *subsystem, const char *message) {
   _lock.lock();
