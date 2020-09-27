@@ -2,6 +2,7 @@
 
 #include "AsyncStarter.h"
 #include "alma_clock.h"
+#include "alma_math.h"
 #include "mbed.h"
 #include "nav.h"
 #include "sdlog.h"
@@ -10,7 +11,6 @@
 static Serial gps(GPS_TX, GPS_RX, 9600);
 
 bool fixOk = false;
-uint32_t gpsClock = 0;
 
 static const int maxField = 15;
 
@@ -31,16 +31,6 @@ static void splitMessage(char *msg) {
   }
 }
 
-static unsigned d2(const char *p) { return (p[0] - '0') * 10 + p[1] - '0'; }
-
-static int nbJours(int d, int m, int y) {
-  m = (m + 9) % 12;
-  y = y - m / 10;
-  return 365*y + y/4 - y/100 + y/400 + (m*306 + 5)/10 + ( d - 1 );
-}
-
-static uint32_t _epoch0 = nbJours(1, 1, 1970);
-
 Mutex coordMutex;
 float latf, lonf = 100;
 
@@ -49,13 +39,13 @@ static float convertDeg(const char *p, bool _3digit, bool neg) {
   float pos;
   if (_3digit) {
     pp = p + 3;
-    pos = d2(p + 1);
+    pos = fast_atoi(p + 1);
     if (*p == '1') pos += 100.0;
   } else {
     pp = p + 2;
-    pos = d2(p);
+    pos = fast_atoi(p);
   }
-  pos += d2(pp) / 60.0;
+  pos += fast_atoi(pp) / 60.0;
   pp = strchr(pp + 1, '\0') - 1;
   float frac = 0;
   for(;;--pp) {
@@ -92,9 +82,6 @@ static void processGPSMessage(char *msg) {
     coordMutex.unlock();
     return;
   }
-
-  gpsClock = ((nbJours(d2(date), d2(date + 2), 2000 + d2(date + 4)) - _epoch0) * 86400
-		  + d2(time) * 3600 + d2(time + 2) * 60 + d2(time + 4));
 
   float latf_ = convertDeg(_message[3], false, _message[4][0] != 'N');
   float lonf_ = convertDeg(_message[5], true, _message[6][0] != 'E');

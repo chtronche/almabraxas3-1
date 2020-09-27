@@ -2,7 +2,6 @@
 #define _NAVIGATOR_H_
 
 extern bool fixOk;
-extern uint32_t gpsClock;
 extern uint8_t year, month, day, hour, min, sec;
 
 extern uint16_t heading;
