@@ -29,6 +29,11 @@ static const float _2_pi = M_PI * 2;
 
 void distAndHeading(float lon0, float lat0, float lon1, float lat1,
 			   float &distanceM, float &bearing) {
+  lon0 = radians(lon0);
+  lat0 = radians(lat0);
+  lon1 = radians(lon1);
+  lat1 = radians(lat1);
+    
   float deltaLat = lat1 - lat0;
   float deltaLon = lon1 - lon0;
   float clat0 = cos(lat0);
