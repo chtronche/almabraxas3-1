@@ -34,7 +34,7 @@ void radioCheck(uint32_t clock) {
   if (clock < _nextCheck) return;
   _nextCheck = clock + 600;
   char buffer[128];
-  sprintf(buffer, "radioCheck %x\n", rfm69.readReg(REG_BITRATEMSB));
+  sprintf(buffer, "radioCheck %x", rfm69.readReg(REG_BITRATEMSB));
   sdlog("radioCheck", buffer);
 }
 

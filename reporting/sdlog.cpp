@@ -3,6 +3,7 @@
 #include "FATFileSystem.h"
 
 #include "alma_clock.h"
+#include "alma_math.h"
 #include "sdlog.h"
 
 static FILE *logFile = NULL;
@@ -126,14 +127,8 @@ static void init() {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-static int fast_x10[] = { 0, 10, 20, 30, 40, 50, 60, 70, 80, 90 };
-
-static inline uint8_t _fast_atoi(const char *p) {
-  return fast_x10[p[0] - '0'] + p[1] - '0';
-}
-
 static bool _modified(const char *s, uint8_t *component) {
-  uint8_t n = _fast_atoi(s);
+  uint8_t n = fast_atoi(s);
   if (n == *component) return false;
   *component = n;
   return true;
@@ -158,7 +153,7 @@ void sdlog(const char *subsystem, const char *message) {
   init();
   if (logFile) {
     int err = fprintf(logFile, "%02d%02d %lu %s\t%s\n", 0, 0, alma_clock, subsystem, message);
-    printf("%d %s\n", err, message);
+    printf("%lu %s\n", alma_clock, message);
     if (err < 0) _close();
   }
   _lock.unlock();

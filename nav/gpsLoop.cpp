@@ -1,6 +1,7 @@
 #include <time.h>
 
 #include "AsyncStarter.h"
+#include "alma_clock.h"
 #include "mbed.h"
 #include "nav.h"
 #include "sdlog.h"
@@ -67,6 +68,10 @@ static float convertDeg(const char *p, bool _3digit, bool neg) {
   return pos;
 }
 
+static bool dateOK(const char *year) {
+  return *year != '8' || year[1] != '0'; // Year 80 when no fix yet
+}
+
 static void processGPSMessage(char *msg) {
   sdlog("gps", msg);
   splitMessage(msg);
@@ -75,7 +80,10 @@ static void processGPSMessage(char *msg) {
   const char *date = _message[9];
   const char *time = _message[1];
 
-  sdlog_checkClock(date, time);
+  if (*date >= '0' && *date <= '9' && dateOK(date + 4)) {
+    alma_clock_resetClock(date, time);
+    sdlog_checkClock(date, time);
+  }
 
   fixOk = _message[2][0] == 'A';
   if (!fixOk) {
