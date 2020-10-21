@@ -32,7 +32,8 @@ static void splitMessage(char *msg) {
 }
 
 Mutex coordMutex;
-float latf, lonf = 100;
+float latf = 100;
+float lonf = 200;
 
 static float convertDeg(const char *p, bool _3digit, bool neg) {
   const char *pp;
@@ -62,6 +63,8 @@ static bool dateOK(const char *year) {
   return *year != '8' || year[1] != '0'; // Year 80 when no fix yet
 }
 
+static void test_nav();
+
 static void processGPSMessage(char *msg) {
   sdlog("gps", msg);
   splitMessage(msg);
@@ -74,6 +77,9 @@ static void processGPSMessage(char *msg) {
     alma_clock_resetClock(date, time);
     sdlog_checkClock(date, time);
   }
+
+  test_nav();
+  return;
 
   fixOk = _message[2][0] == 'A';
   if (!fixOk) {
@@ -124,9 +130,53 @@ static void initProc() {
   }
 }
 
-static AbstractThread _t;
+static AbstractThread _t("GPS");
 
 void gpsLoop_init() {
   _t.run(initProc);
   printf("gps up\n");
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+static float lac[] = {
+  1.9753493563976, 48.8779951457819,
+  1.97549532682324, 48.8779618769324,
+  1.97566956526056, 48.8779181817373,
+  1.97584744980588, 48.8778973201835,
+  1.97602771175736, 48.877859574701,
+  1.97624050396967, 48.8778100680465,
+  1.97641423862168, 48.877758856031,
+  1.97662655504995, 48.8777162945162,
+  1.97688316280179, 48.8776520949852,
+  1.97711396647563, 48.8776021167648,
+  1.97730294325816, 48.8775563595924,
+  1.97751184672879, 48.8775025140992,
+  1.97756664681787, 48.8773708876219,
+  1.97743276002368, 48.8772458234063,
+  1.97731255565542, 48.87712982971,
+
+  // -2.822731870550616,46.17390701395785,
+  // -37.57502725067546,41.06302499630559,
+  // -66.85599729490329,32.9313371535174,
+  // -81.0577800180538,29.99534456797493,
+
+  1000, 1000
+};
+
+static float *test_nav_p = lac;
+static uint32_t _next_test = 0;
+
+static void test_nav() {
+  if (alma_clock < _next_test) return;
+  float _lon0 = *test_nav_p;
+  if (_lon0 >= 400) return;
+
+  lonf = _lon0;
+  latf = *++test_nav_p;
+  ++test_nav_p;
+  _next_test = alma_clock + 10;
+  char buffer[64];
+  sprintf(buffer, "lat=%f lon=%f", latf, lonf);
+  sdlog("test_nav", buffer);
 }

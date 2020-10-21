@@ -24,11 +24,11 @@ extern volatile NVLinearMapper vMapper, iMapper;
 
 extern bool mpptOn; // false to set powerBudget manually
 
-//extern unsigned hysteresis;
-
 // debug
 
 extern power_t peakPower;
 extern uint16_t voltageReading, currentReading;
+
+void currentSamplerLogger_log(uint16_t i);
 
 #endif // _POWER_MANAGER_H_

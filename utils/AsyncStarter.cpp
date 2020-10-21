@@ -2,7 +2,7 @@
 #include "mbed.h"
 
 struct _init {
-  _init(void (*initProc)()) {
+  _init(const char *name, void (*initProc)()):t(osPriorityNormal, OS_STACK_SIZE, NULL, name) {
     t.start(initProc);
   }
 
@@ -13,8 +13,8 @@ struct _init {
   Thread t;
 };
 
-AsyncStarter::AsyncStarter(void (*initProc)()) {
-  _initP = new _init(initProc);
+AsyncStarter::AsyncStarter(const char *name, void (*initProc)()) {
+  _initP = new _init(name, initProc);
 }
 
 void AsyncStarter::ready() {

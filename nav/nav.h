@@ -24,7 +24,7 @@ uint16_t getMagneticHeading(); // In 1/100 of degrees
 
 // From navigator
 
-void distAndHeading(float lon0, float lat0, float lon1, float lat1,
+void distAndHeading(float lat0, float lon0, float lat1, float lon1,
 		    float &distanceM, float &bearing);
 
 float computeTargetHeading(float lon, float lat);

@@ -15,7 +15,7 @@ static void setMotorPower_wait_for_init() {
     wait_ms(7000);
 }
 
-static AsyncStarter _init(setMotorPower_wait_for_init);
+static AsyncStarter _init("t/setMotorPower_init", setMotorPower_wait_for_init);
 
 void setMotorPower(int leftPWM, int rightPWM) {
   _init.ready();

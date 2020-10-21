@@ -60,7 +60,7 @@ static void computeBearing(float lat, float lon, uint16_t *heading, bool *headin
   for(; !i.atEnd(); i.prev()) {
     const cell &c = i.value();
     float distanceM, bearing;
-    distAndHeading(c.lon, c.lat, lon, lat, distanceM, bearing);
+    distAndHeading(c.lat, c.lon, lat, lon, distanceM, bearing);
     if (distanceM >= 20) {
       heading_ = uint8_t(bearing * 128 / M_PI);
       headingIsMagnetic_ = false;
@@ -86,5 +86,8 @@ void bearing_loop(float lat, float lon) {
   computeBearing(lat, lon, &heading, &headingIsMagnetic);
   if (lat > 95) return;
   float targetHeading_ = computeTargetHeading(lat, lon);
-  targetHeading = uint8_t(targetHeading_ * 360.0 / 256);
+  //  targetHeading = uint8_t(targetHeading_ * 128 / M_PI);
+  int n = targetHeading_ * 128 / M_PI;
+  targetHeading = uint8_t(n); // Not clear why doing it directly doesn't work for negative values
+  printf("target H %f\t%d\n", targetHeading_, targetHeading);
 }

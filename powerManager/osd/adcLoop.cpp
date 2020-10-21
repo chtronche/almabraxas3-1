@@ -150,7 +150,7 @@ static void loop() {
   }
 }
 
-static Thread thread;
+static Thread thread(osPriorityNormal, OS_STACK_SIZE, NULL, "t/adcLoop");
 
 void powerManager_osd_init() {
   vars_register("uADCms", const_cast<uint16_t *>(&uADCms));

@@ -26,7 +26,7 @@ static void _initProc() {
   rfm69.writeReg(REG_BITRATELSB, RF_BITRATELSB_100000);
 }
 
-static AsyncStarter _init(_initProc);
+static AsyncStarter _init("t/radio", _initProc);
 
 static uint32_t _nextCheck = 0;
 

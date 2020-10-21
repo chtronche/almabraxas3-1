@@ -17,4 +17,4 @@ static void initProc() {
   compass.mag_config();
 }
 
-static AsyncStarter _init(initProc);
+static AsyncStarter _init("t/compass", initProc);

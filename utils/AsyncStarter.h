@@ -5,7 +5,7 @@
 
 class AsyncStarter {
  public:
-  AsyncStarter(void (*initProc)());
+  AsyncStarter(const char *name, void (*initProc)());
   void ready();
 
  private:
@@ -17,6 +17,7 @@ class AbstractThread {
 private:
   Thread t; // compromise with static allocation...
 public:
+ AbstractThread(const char *name): t(osPriorityNormal, OS_STACK_SIZE, NULL, name) { }
   void run(void (*initProc)()) { t.start(initProc); }
 };
 

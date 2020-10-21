@@ -122,6 +122,9 @@ uint16_t voltageReading, currentReading;
 void powerManager_loop_cb(uint16_t v, uint16_t i) {
   voltageReading = v;
   currentReading = i;
+
+  //currentSamplerLogger_log(i);
+
   voltage = const_cast<NVLinearMapper &>(vMapper).convert(v);
   current = const_cast<NVLinearMapper &>(iMapper).convert(i);
   
