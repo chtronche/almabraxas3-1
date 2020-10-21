@@ -78,12 +78,12 @@ static unsigned bearing_degree(float bearing_radian) {
 static void setTarget(unsigned navPlan_index) {
   if (uNavPnt == navPlan_index or lastPoint) return;
   currentTarget = navPlan + navPlan_index;
+  NV<uint16_t>::set("uNavPnt", &uNavPnt, navPlan_index);
   const cell *nextTarget = currentTarget + 1;
   if (nextTarget->lon > 400) {
     lastPoint = true;
     return; // done
   }
-  NV<uint16_t>::set("uNavPnt", &uNavPnt, navPlan_index);
   float discard;
   distAndHeading(currentTarget->lat, currentTarget->lon, nextTarget->lat, nextTarget->lon,
 		 discard, followingBearing);
@@ -97,9 +97,10 @@ void nav_init() {
   //getu("uNavPnt", &uNavPnt);
   vars_register("uNavPnt", &uNavPnt);
   NV<uint16_t>::get("uNavPnt", &uNavPnt);
-  printf("nav up\n");
-  //setTarget(0);
+  uNavPnt = -1; // debug
+  setTarget(0);
   //retrieve navPlan
+  printf("nav up\n");
 }
 
 float computeTargetHeading(float lat, float lon) {

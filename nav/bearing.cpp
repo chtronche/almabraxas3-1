@@ -89,5 +89,4 @@ void bearing_loop(float lat, float lon) {
   //  targetHeading = uint8_t(targetHeading_ * 128 / M_PI);
   int n = targetHeading_ * 128 / M_PI;
   targetHeading = uint8_t(n); // Not clear why doing it directly doesn't work for negative values
-  printf("target H %f\t%d\n", targetHeading_, targetHeading);
 }
