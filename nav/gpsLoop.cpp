@@ -164,17 +164,27 @@ static float lac[] = {
   1000, 1000
 };
 
-static float *test_nav_p = lac;
+static float *test_nav_p = lac - 1;
+static int scanDirection;
 static uint32_t _next_test = 0;
 
 static void test_nav() {
   if (alma_clock < _next_test) return;
+
+  if (test_nav_p < lac) {
+    test_nav_p = lac;
+    scanDirection = 2;
+  }
   float _lon0 = *test_nav_p;
-  if (_lon0 >= 400) return;
+  if (_lon0 >= 400) {
+    scanDirection = -2;
+    test_nav_p -= 2;
+    return;
+  }
 
   lonf = _lon0;
-  latf = *++test_nav_p;
-  ++test_nav_p;
+  latf = test_nav_p[1];
+  test_nav_p += scanDirection;
   _next_test = alma_clock + 10;
   char buffer[64];
   sprintf(buffer, "lat=%f lon=%f", latf, lonf);
