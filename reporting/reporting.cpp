@@ -14,6 +14,7 @@
 #include "ping.h"
 #include "powerManager.h"
 #include "reporting.h"
+#include "sdlog.h"
 #include "vars.h"
 
 bool reporting_serial_active = false;
@@ -23,7 +24,9 @@ static uint32_t _flags;
 void setFlag(uint8_t flag, bool value) {
   uint32_t mask = 1 << flag;
   NV<uint32_t>::set("UFlags", &_flags, (_flags & ~mask) | (mask & uint32_t(value)));
-  printf("flags = %lx\n", _flags);
+  char buffer[128];
+  snprintf(buffer, 128, "flags = %lx\n", _flags);
+  sdlog("report", buffer);
 }
 
 static void add8(char *&p, uint8_t v) {
@@ -114,7 +117,7 @@ void reporting_init() {
     rdp[-1] = '\0';
   }
   printf("\treporting description is '%s'\n", _reportDescription);
-  printf("reporting up\n");
+  sdlog("up", "reporting");
 }
 
 void reporting_get_description(unsigned n) {

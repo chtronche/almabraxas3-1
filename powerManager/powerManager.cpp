@@ -13,6 +13,7 @@
 #include "NVStore.h"
 #include "powerManager.h"
 #include "reporting.h"
+#include "sdlog.h"
 #include "vars.h"
 
 volatile uint8_t voltage; // in V/10
@@ -111,7 +112,9 @@ void powerManager_init() {
   
   const_cast<NVLinearMapper &>(vMapper).retrieve();
   const_cast<NVLinearMapper &>(iMapper).retrieve();
-  printf("powerManager up %f %f\n", iMapper.a, iMapper.b);
+  char buffer[128];
+  sprintf(buffer, "powermanager %f %f", iMapper.a, iMapper.b);
+  sdlog("up", buffer);
 }
 
 #include "adebug.h"

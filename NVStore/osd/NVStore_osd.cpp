@@ -5,6 +5,7 @@
 #include <flash_data.h>
 
 #include "NVStore.h"
+#include "sdlog.h"
 
 #define FIRST_DB_BLOCK (ADDR_FLASH_SECTOR_6)
 
@@ -56,33 +57,39 @@ void NVStore_init() {
   flash.init();
   int res = nvStore.init();
   printf("nvStore up error=%d\n", res);
+}
+
+void NVStore_dump() {
   KVStore::iterator_t i;
   char key[16];
   uint32_t U;
   for(nvStore.iterator_open(&i); nvStore.iterator_next(i, key, 16) == MBED_SUCCESS;) {
-    printf("\t%s\t", key);
+    char buffer[128];
+    snprintf(buffer, 128, "%s\t", key);
+    char *p = strchr(buffer, '\0');
+    int left = p - buffer;
     switch(key[0]) {
     case 'i':
-      printf("%d", NV<int16_t>::get(key));
+      snprintf(p, left, "%d", NV<int16_t>::get(key));
       break;
 
     case 'u':
-      printf("%d", NV<uint16_t>::get(key));
+      snprintf(p, left, "%d", NV<uint16_t>::get(key));
       break;
 
     case 'U':
       U = NV<uint32_t>::get(key);
-      printf("%ld %lxd", U, U);
+      snprintf(p, left, "%ld %lxd", U, U);
       break;
 
     case 'f':
-      printf("%f", NV<float>::get(key));
+      snprintf(p, left, "%f", NV<float>::get(key));
       break;
 
     default:
       break;
     }
-    putchar('\n');
+    sdlog("nvdump", buffer);
   }
   nvStore.iterator_close(i);
 }

@@ -15,5 +15,6 @@ template<class T> struct NV {
 };
 
 void NVStore_init();
+void NVStore_dump(); // Call when sdlog is up
 
 #endif // _ALMA_NVSTORE_H_

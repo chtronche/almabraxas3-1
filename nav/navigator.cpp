@@ -100,8 +100,9 @@ void nav_init() {
   uNavPnt = -1; // debug
   setTarget(0);
   //retrieve navPlan
-  printf("nav up\n");
+  sdlog("up", "nav");
 }
+
 
 float computeTargetHeading(float lat, float lon) {
   const cell *target = navPlan + uNavPnt;

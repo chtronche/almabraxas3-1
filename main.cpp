@@ -20,6 +20,7 @@ int main()
   reporting_serial_init();
   NVStore_init();
   sd_init();
+  NVStore_dump();
   sdlog("main", "starting");
   reporting_init();
   powerManager_init();

@@ -14,5 +14,5 @@ static FATFileSystem fileSystem("fs");
 
 void sd_init() {
   int err = fileSystem.mount(&blockDevice);
-  printf("sd mount res = %d\n", err);
+  printf("sd mount err = %d\n", err);
 }

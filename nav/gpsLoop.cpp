@@ -78,8 +78,8 @@ static void processGPSMessage(char *msg) {
     sdlog_checkClock(date, time);
   }
 
-  test_nav();
-  return;
+  // test_nav();
+  // return;
 
   fixOk = _message[2][0] == 'A';
   if (!fixOk) {
@@ -122,10 +122,18 @@ static void initProc() {
     _e.wait_any(1);
     if (_events & SERIAL_EVENT_RX_CHARACTER_MATCH) {
       char *p = strchr(_gpsMessage, '\r');
-      *p = '\0';
-      processGPSMessage(_gpsMessage);
+      if (p) {
+	*p = '\0';
+	processGPSMessage(_gpsMessage);
+      } else {
+	sdlog("gpsloop", "#incomplete GPS string ???");
+      }
+      bearing_loop(latf, lonf);
+    } else {
+      char buffer[128];
+      snprintf(buffer, 128, "serial event %d", _events);
+      sdlog("gpsloop", buffer);
     }
-    bearing_loop(latf, lonf);
     gps.read((uint8_t *)_gpsMessage, gpsBufferLength - 1, serialCB, SERIAL_EVENT_RX_ALL, '\n');
   }
 }
@@ -134,7 +142,7 @@ static AbstractThread _t("GPS");
 
 void gpsLoop_init() {
   _t.run(initProc);
-  printf("gps up\n");
+  sdlog("up", "gps");
 }
 
 ////////////////////////////////////////////////////////////////////////////////
