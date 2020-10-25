@@ -23,7 +23,7 @@ void alma_clock_resetClock(const char *gpsDate, const char *gpsTime) {
   _tm.tm_min = fast_atoi(gpsTime + 2);
   _tm.tm_hour = fast_atoi(gpsTime);
   _tm.tm_mday = fast_atoi(gpsDate);
-  _tm.tm_mon = fast_atoi(gpsDate + 2);
+  _tm.tm_mon = fast_atoi(gpsDate + 2) - 1;
   _tm.tm_year = 100 + fast_atoi(gpsDate + 4);
 
   time_t t = mktime(&_tm);
@@ -32,11 +32,8 @@ void alma_clock_resetClock(const char *gpsDate, const char *gpsTime) {
   start = t - alma_clock;
   alma_clock_advance();
 
-  printf("clock set, delta uptime (should be zero) = %ld\n", alma_clock - c);
-
-  char buffer[64];
-  sprintf(buffer, "time set to %s", ctime(&t));
-  buffer[strlen(buffer)] = '\0';
+  char buffer[128];
+  snprintf(buffer, 128, "time set to %s, delta (should be zero) = %ld", ctime(&t), alma_clock - c);
   sdlog("clock", buffer);
 
   _rtc_set = true;
