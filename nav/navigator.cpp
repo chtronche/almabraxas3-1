@@ -103,7 +103,6 @@ void nav_init() {
   sdlog("up", "nav");
 }
 
-
 float computeTargetHeading(float lat, float lon) {
   const cell *target = navPlan + uNavPnt;
   float distanceM, bearing;

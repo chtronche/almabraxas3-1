@@ -94,9 +94,6 @@ static void powerManager_getPowerBudget(uint8_t voltage, uint8_t current) {
 
 // ================================= Loop =============================
 
-// static LinearMapper _vMapper(875, 70, 3178, 200);
-// static LinearMapper _iMapper(2515, 10, 2875, 100);
-
 volatile NVLinearMapper vMapper("iv0From", "fv0To", "iv1From", "fv1To");
 volatile NVLinearMapper iMapper("ii0From", "fi0To", "ii1From", "fi1To");
 
