@@ -33,6 +33,7 @@ typedef struct {
   float lat, lon;
 } cell;
 
+void compass_init();
 void nav_init();
 void gpsLoop_init();
 

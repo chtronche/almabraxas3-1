@@ -24,6 +24,7 @@ int main()
   sdlog("main", "starting");
   reporting_init();
   powerManager_init();
+  compass_init();
   nav_init();
   gpsLoop_init();
   while(1) {

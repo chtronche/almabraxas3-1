@@ -1,5 +1,5 @@
-#include "AsyncStarter.h"
 #include "FXOS8700.h"
+#include "sdlog.h"
 #include "wiring.h"
 
 static FXOS8700 compass(ALMA_SDA, ALMA_SCL);
@@ -7,14 +7,14 @@ static FXOS8700 compass(ALMA_SDA, ALMA_SCL);
 uint8_t getMagneticHeading() {
   float mag[3];
   compass.acquire_mag_data_uT(mag);
-  // No need to compensate for negative number: magic of modulo !
-  int8_t heading_ = int8_t(atan2(mag[1], mag[0]) * 128 / M_PI);
-  uint8_t heading = heading_; // Strangely, if you don't do this 2-step conversion, you end up with0 for a negative number ?
+  int heading_ = atan2(mag[1], mag[0]) * 128 / M_PI;
+  if (heading_ < 0) heading_ += 256;
+  //heading_ = (heading_ + 90) % 256;
+  uint8_t heading = heading_;
   return heading;
 }
 
-static void initProc() {
+void compass_init() {
   compass.mag_config();
+  sdlog("up", "compass");
 }
-
-static AsyncStarter _init("t/compass", initProc);
