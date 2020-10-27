@@ -117,24 +117,23 @@ static void initProc() {
   gps.printf("$PMTK220,5000*1B\r\n"); // Every 5s
 
   _gpsMessage[gpsBufferLength - 1] = '\0'; // Guardian
-  gps.read((uint8_t *)_gpsMessage, gpsBufferLength - 1, serialCB, SERIAL_EVENT_RX_ALL, '\n');
   for(;;) {
+    gps.read((uint8_t *)_gpsMessage, gpsBufferLength - 1, serialCB, SERIAL_EVENT_RX_ALL, '\n');
     _e.wait_any(1);
-    if (_events & SERIAL_EVENT_RX_CHARACTER_MATCH) {
-      char *p = strchr(_gpsMessage, '\r');
-      if (p) {
-	*p = '\0';
-	processGPSMessage(_gpsMessage);
-      } else {
-	sdlog("gpsloop", "#incomplete GPS string ???");
-      }
-      bearing_loop(latf, lonf);
-    } else {
+    if (!(_events & SERIAL_EVENT_RX_CHARACTER_MATCH)) {
       char buffer[128];
       snprintf(buffer, 128, "serial event %d", _events);
       sdlog("gpsloop", buffer);
+      continue;
     }
-    gps.read((uint8_t *)_gpsMessage, gpsBufferLength - 1, serialCB, SERIAL_EVENT_RX_ALL, '\n');
+    char *p = strchr(_gpsMessage, '\r');
+    if (!p) {
+	sdlog("gpsloop", "#incomplete GPS string ???");
+	continue;
+    }
+    *p = '\0';
+    processGPSMessage(_gpsMessage);
+    bearing_loop(latf, lonf);
   }
 }
 

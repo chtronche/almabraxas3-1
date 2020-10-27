@@ -3,6 +3,12 @@
 #include "nav.h"
 #include "sdlog.h"
 
+////////////////////////////////////////////////////////////////////////////////
+//
+// Circular buffer of last lat / lon fixes. Use to compute "ground" track.
+//
+////////////////////////////////////////////////////////////////////////////////
+
 static const int _bufferSize = 64; // power of two please
 
 class _CircularBuffer { // Fixed size, always full
@@ -55,6 +61,12 @@ private:
   int _n;
 };
 
+////////////////////////////////////////////////////////////////////////////////
+//
+// Now the real meat
+//
+////////////////////////////////////////////////////////////////////////////////
+
 _CircularBuffer _buffer;
 
 uint8_t magneticHeading = 0;
@@ -93,18 +105,17 @@ static void computeBearing(float lat, float lon, uint16_t *heading, bool *headin
   sdlog("bearing", buffer);
 }
 
-// This is where PID should take place
-// Called by the GPS reading loop
-
 uint16_t heading;
 bool headingIsMagnetic;
 volatile uint8_t targetHeading;
+
+// This is where PID should take place
+// Called by the GPS reading loop
 
 void bearing_loop(float lat, float lon) {
   computeBearing(lat, lon, &heading, &headingIsMagnetic);
   if (lat > 95) return;
   float targetHeading_ = computeTargetHeading(lat, lon);
-  //  targetHeading = uint8_t(targetHeading_ * 128 / M_PI);
   int n = targetHeading_ * 128 / M_PI;
   targetHeading = uint8_t(n); // Not clear why doing it directly doesn't work for negative values
 }
