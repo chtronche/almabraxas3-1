@@ -113,13 +113,17 @@ static void serialCB(int events) {
 //static const char *debugMsg = "$GPRMC,175504.000,A,4852.6779,N,00158.5257,E,0.77,3.49,060615,,,A*6B\n";
 
 static void initProc() {
+  //gps.printf("$PMTK101*32\r\n"); // Reset
+  //wait_ms(1000);
   gps.printf("$PMTK314,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0*29\r\n"); // Only GPRMC messages
   gps.printf("$PMTK220,5000*1B\r\n"); // Every 5s
+  sdlog("up", "gps");
 
   _gpsMessage[gpsBufferLength - 1] = '\0'; // Guardian
+  gps.read((uint8_t *)_gpsMessage, gpsBufferLength - 1, serialCB, SERIAL_EVENT_RX_ALL, '\n');
   for(;;) {
-    gps.read((uint8_t *)_gpsMessage, gpsBufferLength - 1, serialCB, SERIAL_EVENT_RX_ALL, '\n');
     _e.wait_any(1);
+    gps.read((uint8_t *)_gpsMessage, gpsBufferLength - 1, serialCB, SERIAL_EVENT_RX_ALL, '\n');
     if (!(_events & SERIAL_EVENT_RX_CHARACTER_MATCH)) {
       char buffer[128];
       snprintf(buffer, 128, "serial event %d", _events);
@@ -141,7 +145,6 @@ static AbstractThread _t("GPS");
 
 void gpsLoop_init() {
   _t.run(initProc);
-  sdlog("up", "gps");
 }
 
 ////////////////////////////////////////////////////////////////////////////////
