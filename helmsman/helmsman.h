@@ -6,6 +6,7 @@
 extern int16_t leftPower, rightPower; // in PWM unit
 
 extern int8_t forcedSteering; // -128 for cruise
+extern int8_t helm; // [-64,64]
 extern bool forcedSteering_reverse; // When forced
 
 // That is, steer

@@ -8,6 +8,7 @@
 #include "ping.h"
 #include "powerManager.h"
 #include "reporting.h"
+#include "sdlog.h"
 #include "TokenFinder.h"
 #include "vars.h"
 
@@ -23,6 +24,7 @@ static token _verbFinderData[] = {
   "pi", 0x700,
   "debug", 0x800,
   "get", 0x900,
+  "reverse", 0xa00,
   NULL, 0
 };
 
@@ -68,6 +70,7 @@ static bool lastWasDot = false;
 
 void processCommand(const char *command) {
   if (!command) return;
+  sdlog("command", command);
 
   bool bc = false;
   const char *_next;
@@ -142,7 +145,7 @@ void processCommand(const char *command) {
   //   powerManager_commanderSetHysteresis(_next);
   //   break;
 
-  case 0x10a: // set left
+  case 0x10a: // set help
     forcedSteering = atoi(_next);
     break;
 
@@ -190,6 +193,14 @@ void processCommand(const char *command) {
     
   case 0x910: // get report_desc
     reporting_get_description(atoi(_next));
+    break;
+
+  case 0xa08: // reverse on
+    forcedSteering_reverse = true;
+    break;
+
+  case 0xa09: // reverse off
+    forcedSteering_reverse = false;
     break;
 
   default:

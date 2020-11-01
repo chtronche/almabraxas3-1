@@ -77,6 +77,8 @@ static const struct reportField {
   "2H=%d", &heading,
   "1MH=%d", &magneticHeading,
   "1TH=%d", &targetHeading,
+  "1|=%d", &helm,
+  "1%d", &forcedSteering_reverse,
   "2WP=%d", &uNavPnt,
 
   "l%f", &_lat,
@@ -156,7 +158,7 @@ void reporting_loop() {
 	printf(prefix, *(uint8_t *)rfp->varp);
 	break;
       case '2':
-	printf(prefix, *(uint16_t *)rfp->varp);
+	printf(prefix, *(int16_t *)rfp->varp);
 	break;
       case '4':
 	printf(prefix, *(uint32_t *)rfp->varp);
@@ -188,16 +190,18 @@ void reporting_loop() {
     add8(p, mppt_direction); // 16
     add16(p, leftPower); // 18
     add16(p, rightPower); // 20
-    add32(p, peakPower); // 28
-    add16(p, heading); // 30
-    add8(p, magneticHeading); // 39
-    add8(p, targetHeading); // 40
-    add16(p, uNavPnt);
-    add32(p, uint32_t(latf * INT_MAX / 180.0)); // 48
-    add32(p, uint32_t(lonf * INT_MAX / 180.0)); // 48
-    add16(p, _rssi); // 36
-    add16(p, ping.lost); // 38
-    add32(p, badCommand); // 34
+    add32(p, peakPower); // 24
+    add16(p, heading); // 26
+    add8(p, magneticHeading); // 27
+    add8(p, targetHeading); // 28
+    add8(p, helm); // 29
+    add8(p, forcedSteering_reverse); // 30
+    add16(p, uNavPnt); // 32
+    add32(p, uint32_t(latf * INT_MAX / 180.0)); // 36
+    add32(p, uint32_t(lonf * INT_MAX / 180.0)); // 40
+    add16(p, _rssi); // 42
+    add16(p, ping.lost); // 44
+    add32(p, badCommand); // 48
   }
 
   radioCheck(alma_clock);
