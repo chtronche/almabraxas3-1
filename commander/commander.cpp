@@ -49,6 +49,7 @@ static token _nounFinderData[] = {
     "var", 0xf,
     "report_desc", 0x10,
     "gps", 0x11,
+    "radio", 0x12,
     NULL, 0
 };
 
@@ -185,6 +186,14 @@ void processCommand(const char *command) {
 
   case 0x411: // stop gps
     gps_sleep();
+    break;
+
+  case 0x312: // start radio
+    radio_wakeup();
+    break;
+
+  case 0x412: // stop radio
+    radio_sleep();
     break;
 
   case 0x707: // ping (aka pi ng)

@@ -17,6 +17,9 @@ void setFlag(uint8_t flag, bool value);
 
 void reporting_get_description(unsigned);
 
+void radio_sleep();
+void radio_wakeup();
+
 // Impl
 
 void radioSendFrame(unsigned len, const char *);
