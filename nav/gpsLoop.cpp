@@ -65,10 +65,10 @@ static bool dateOK(const char *year) {
 
 static void test_nav();
 
-static void processGPSMessage(char *msg) {
+static bool processGPSMessage(char *msg) {
   sdlog("gps", msg);
   splitMessage(msg);
-  if (strcmp(_message[0], "$GPRMC")) return;
+  if (strcmp(_message[0], "$GPRMC")) return false;
 
   const char *date = _message[9];
   const char *time = _message[1];
@@ -86,7 +86,7 @@ static void processGPSMessage(char *msg) {
     coordMutex.lock();
     latf = 100;
     coordMutex.unlock();
-    return;
+    return false;
   }
 
   float latf_ = convertDeg(_message[3], false, _message[4][0] != 'N');
@@ -95,6 +95,7 @@ static void processGPSMessage(char *msg) {
   latf = latf_;
   lonf = lonf_;
   coordMutex.unlock();
+  return true;
 }
 
 static const unsigned gpsBufferLength = 92;
@@ -112,18 +113,52 @@ static void serialCB(int events) {
 
 //static const char *debugMsg = "$GPRMC,175504.000,A,4852.6779,N,00158.5257,E,0.77,3.49,060615,,,A*6B\n";
 
-static void initProc() {
-  //gps.printf("$PMTK101*32\r\n"); // Reset
-  //wait_ms(1000);
-  gps.printf("$PMTK314,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0*29\r\n"); // Only GPRMC messages
-  gps.printf("$PMTK220,5000*1B\r\n"); // Every 5s
-  sdlog("up", "gps");
+static void globSerial() {
+  printf("#\n");
+  while(gps.readable()) printf("%c", gps.getc());
+}
 
+// $PMTK161,0*28 // stand by
+
+static const char *startupMessages[] = {
+  "$PMTK000*32\r\n", // Test (wake up)
+  "$PMTK101*32\r\n", // Reset
+  "$PMTK605*31\r\n", // Get GPS firmware reference
+  "$PMTK447*35\r\n", // Get Nav threshold
+  "$PMTK314,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0*29\r\n", // Only GPRMC messages
+  "$PMTK220,5000*1B\r\n", // Every 5s
+  NULL
+};
+
+static bool gps_is_sleeping = false;
+
+void gps_sleep() {
+  if (gps_is_sleeping) return;
+  gps.printf("$PMTK161,0*28\r\n");
+  gps_is_sleeping = true;
+}
+
+void gps_wakeup() {
+  if (!gps_is_sleeping) return;
+  gps.printf("$PMTK000*32\r\n");
+  gps_is_sleeping = false;
+}
+
+static void initProc() {
+  globSerial();
   _gpsMessage[gpsBufferLength - 1] = '\0'; // Guardian
   gps.read((uint8_t *)_gpsMessage, gpsBufferLength - 1, serialCB, SERIAL_EVENT_RX_ALL, '\n');
+  const char *const *script = startupMessages;
+  gps_wakeup();
+  sdlog("up", "gps");
+
   for(;;) {
     _e.wait_any(1);
     gps.read((uint8_t *)_gpsMessage, gpsBufferLength - 1, serialCB, SERIAL_EVENT_RX_ALL, '\n');
+    if (*script) {
+      gps.printf(*script);
+      ++script;
+    }
     if (!(_events & SERIAL_EVENT_RX_CHARACTER_MATCH)) {
       char buffer[128];
       snprintf(buffer, 128, "serial event %d", _events);
@@ -136,8 +171,8 @@ static void initProc() {
 	continue;
     }
     *p = '\0';
-    processGPSMessage(_gpsMessage);
-    bearing_loop(latf, lonf);
+    bool fix = processGPSMessage(_gpsMessage);
+    if (fix) bearing_loop(latf, lonf);
   }
 }
 

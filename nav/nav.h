@@ -22,6 +22,11 @@ void bearing_loop(float lat, float lon);
 
 uint16_t getMagneticHeading(); // In 1/100 of degrees
 
+// gps power control
+
+void gps_sleep();
+void gps_wakeup();
+
 // From navigator
 
 void distAndHeading(float lat0, float lon0, float lat1, float lon1,

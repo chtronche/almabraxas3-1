@@ -5,6 +5,7 @@
 #include "commander.h"
 #include "helmsman.h"
 #include "main.h"
+#include "nav.h"
 #include "ping.h"
 #include "powerManager.h"
 #include "reporting.h"
@@ -47,6 +48,7 @@ static token _nounFinderData[] = {
     "i1", 0xe,
     "var", 0xf,
     "report_desc", 0x10,
+    "gps", 0x11,
     NULL, 0
 };
 
@@ -175,6 +177,14 @@ void processCommand(const char *command) {
     *p = '\0';
     
     vars_set(_next, p + 1);
+    break;
+
+  case 0x311: // start gps
+    gps_wakeup();
+    break;
+
+  case 0x411: // stop gps
+    gps_sleep();
     break;
 
   case 0x707: // ping (aka pi ng)
