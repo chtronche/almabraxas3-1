@@ -64,6 +64,10 @@ char *readRadioPacket() {
   unsigned len = MIN(rfm69.DATALEN, RF69_MAX_DATA_LEN);
   memcpy(buffer, (void *)rfm69.DATA, len);
   buffer[len] = '\0';
+  if (!strncmp(buffer, "pi ng ", 6)) return buffer; // pi ng isn't echoed
+  char _buffer[128];
+  snprintf(_buffer, 128, ">>%s", buffer); // Echo back command
+  radioSendFrame(strlen(_buffer), _buffer);
   return buffer;
 }
 
