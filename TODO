@@ -1,0 +1,18 @@
+Shut down des leds ?
+Kalman sur courant et trajectoire
+PID...
+Nouveau nom de fichier log a chaque demarrage.
+Compression des logs.
+Dialogue satellite.
+"run prog xxx"
+navplan reading
+current sampling log
+Arret du moteur apres 36 fix manques (pas 1) = 3 minutes
+      compteur pour connaitre l'influence
+Modification navplan a distance
+	quid de l'interaction avec la sd card ?
+faire tourner le moteur en arriere 5 min le matin (pour enlever les algues)
+envoi de messages si motor = off ?
+radio initial state from NV flag
+Go into sleep mode when there's no available power
+Checksum on commands
