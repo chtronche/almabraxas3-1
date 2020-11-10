@@ -12,7 +12,7 @@ Arret du moteur apres 36 fix manques (pas 1) = 3 minutes
 Modification navplan a distance
 	quid de l'interaction avec la sd card ?
 faire tourner le moteur en arriere 5 min le matin (pour enlever les algues)
-envoi de messages si motor = off ?
 radio initial state from NV flag
-Go into sleep mode when there's no available power
+Go into sleep mode when there's no available power => not that clear
+   envoi de messages si motor = off ?
 Checksum on commands
