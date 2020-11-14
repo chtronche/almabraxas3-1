@@ -1,0 +1,36 @@
+This is the software for the Almabraxas 3.1 USV (Unmanned Surface
+Vehicle, but I prefer roboat).
+
+The modules:
+  
+* alma_clock: the all-important clock.
+
+* commander: interpret the commands sent through communication
+  channels (serial link on the bench, radio at test "facilities",
+  satellite in the field).
+
+* reporting: various logging services to log on the SD card, through
+  serial, radio and satellite channels. Please note that the set of
+  reported data vary among channels (and the frequency of course). For
+  example, the available voltage / current is of little use when in
+  the field.
+
+* powerManager: determine the available power.
+
+* nav: use the position to determine the heading.
+
+* helmsman: use the data from powerManager and nav to set the power on
+  the two motors.
+
+* wiring.h: where are each signals.
+
+* Utilities:
+  ** sd: write to the SD card, mostly for logging. The navplans also
+       are on the SD card.
+  ** adebug: light the LEDs to see what's going on while on the bench.
+  ** NVStore: store parameters in the MCU non volatile memories,
+        mostly the software parameters.
+  ** ping: command sent by the other side on radio channel to check RSSI.
+  ** utils: various utilities
+
+* lib: directory with external libraries.
