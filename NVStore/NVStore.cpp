@@ -19,6 +19,14 @@ template<class T> void NV<T>::set(const char *key, T *var, T value) {
   nvStore.set(key, var, sizeof(T), 0);
 }
 
+template<class T> void NV<T>::setFirstValue(const char *key, T value) {
+  char buffer[sizeof(T)];
+  int error = nvStore.get(key, buffer, sizeof(T));
+  printf("setFirstValue %s res=%d (%d)\n", key, error, MBED_ERROR_ITEM_NOT_FOUND);
+  if (!error || error != MBED_ERROR_ITEM_NOT_FOUND) return;
+  nvStore.set(key, &value, sizeof(T), 0);
+}
+
 template struct NV<int16_t>; // i
 template struct NV<uint16_t>;// u
 template struct NV<uint32_t>;// U

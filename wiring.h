@@ -41,4 +41,6 @@ static const PinName ALMA_SDA = PB_9;
 static const PinName GPS_TX = PB_6;
 static const PinName GPS_RX = PA_10;
 
+static const PinName DHT_22_1WIRE = PC_3;
+
 #endif // _WIRING_H_

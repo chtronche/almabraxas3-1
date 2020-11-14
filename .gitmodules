@@ -1,0 +1,3 @@
+[submodule "lib/ya-dht22"]
+	path = lib/ya-dht22
+	url = https://github.com/chtronche/ya-dht22.git

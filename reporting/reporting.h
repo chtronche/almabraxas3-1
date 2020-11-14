@@ -20,6 +20,10 @@ void reporting_get_description(unsigned);
 void radio_sleep();
 void radio_wakeup();
 
+void satellite_init(); // initialize NVStore first
+void satellite_armClock(const char *date);
+void satellite_loop();
+
 // Impl
 
 void radioSendFrame(unsigned len, const char *);

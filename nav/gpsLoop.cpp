@@ -5,6 +5,7 @@
 #include "alma_math.h"
 #include "mbed.h"
 #include "nav.h"
+#include "reporting.h"
 #include "sdlog.h"
 #include "wiring.h"
 
@@ -78,6 +79,8 @@ static bool processGPSMessage(char *msg) {
     sdlog_checkClock(date, time);
   }
 
+  satellite_loop(); // Called from there for now
+
   // test_nav();
   // return;
 
@@ -95,6 +98,7 @@ static bool processGPSMessage(char *msg) {
   latf = latf_;
   lonf = lonf_;
   coordMutex.unlock();
+
   return true;
 }
 
