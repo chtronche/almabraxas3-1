@@ -9,7 +9,10 @@
 	    "target.restrict_size": "0x60000"
 	},
 	"*": {
-	    "platform.cpu-stats-enabled": true
+	    "platform.cpu-stats-enabled": true,
+	    "platform.crash-capture-enabled": true,
+	    "platform.fatal-error-auto-reboot-enabled": true,
+	    "platform.error-reboot-max": 80000
 	}
     }
 }
