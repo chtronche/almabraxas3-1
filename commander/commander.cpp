@@ -23,9 +23,7 @@ static token _verbFinderData[] = {
   "read", 0x500,
   "convert", 0x600,
   "pi", 0x700,
-  "debug", 0x800,
   "get", 0x900,
-  "reverse", 0xa00,
   NULL, 0
 };
 
@@ -50,6 +48,8 @@ static token _nounFinderData[] = {
     "report_desc", 0x10,
     "gps", 0x11,
     "radio", 0x12,
+    "reverse", 0x13,
+    "debug", 0x14,
     NULL, 0
 };
 
@@ -148,7 +148,7 @@ void processCommand(const char *command) {
   //   powerManager_commanderSetHysteresis(_next);
   //   break;
 
-  case 0x10a: // set help
+  case 0x10a: // set helm
     forcedSteering = atoi(_next);
     break;
 
@@ -200,12 +200,12 @@ void processCommand(const char *command) {
     ping.received(atoi(_next));
     break;
 
-  case 0x808: // Debug on
+  case 0x314: // start debug
     reporting_serial_active = true;
     setFlag(0, true);
     break;
     
-  case 0x809: // Debug off
+  case 0x414: // stop debug
     reporting_serial_active = false;
     setFlag(0, false);
     break;
@@ -214,11 +214,11 @@ void processCommand(const char *command) {
     reporting_get_description(atoi(_next));
     break;
 
-  case 0xa08: // reverse on
+  case 0x313: // start reverse
     forcedSteering_reverse = true;
     break;
 
-  case 0xa09: // reverse off
+  case 0x413: // stop reverse
     forcedSteering_reverse = false;
     break;
 
