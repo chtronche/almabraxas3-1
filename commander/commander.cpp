@@ -32,13 +32,10 @@ static TokenFinder _verbFinder(_verbFinderData);
 static token _nounFinderData[] = {
     "comment", 0x01,
     "budget", 0x02,
-    "calibration", 0x3,
     "voltage", 0x4,
     "current", 0x5,
     "hysteresis", 0x6,
     "ng", 0x7,
-    "on", 0x8,
-    "off", 0x9,
     "helm", 0xa,
     "v0", 0xb,
     "v1", 0xc,
@@ -50,6 +47,7 @@ static token _nounFinderData[] = {
     "radio", 0x12,
     "reverse", 0x13,
     "debug", 0x14,
+    "logISamp", 0x15,
     NULL, 0
 };
 
@@ -220,6 +218,14 @@ void processCommand(const char *command) {
 
   case 0x413: // stop reverse
     forcedSteering_reverse = false;
+    break;
+
+  case 0x315: // start logISamp
+    currentSamplerLogger_start(_next);
+    break;
+
+  case 0x415: //stop logISamp
+    currentSamplerLogger_stop();
     break;
 
   default:

@@ -29,6 +29,7 @@ extern bool mpptOn; // false to set powerBudget manually
 extern power_t peakPower;
 extern uint16_t voltageReading, currentReading;
 
-void currentSamplerLogger_log(uint16_t i);
+void currentSamplerLogger_start(const char *fileName);
+void currentSamplerLogger_stop();
 
 #endif // _POWER_MANAGER_H_

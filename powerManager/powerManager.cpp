@@ -92,6 +92,37 @@ static void powerManager_getPowerBudget(uint8_t voltage, uint8_t current) {
   powerBudget += mppt_direction;
 }
 
+//////////////////////////// debug ///////////////////////////////////////////////////
+
+static const int _logBufferDepth = 256;
+static FILE *_logFile = NULL;
+static uint16_t _logBuffer[_logBufferDepth];
+static int _logBufferIdx;
+
+void currentSamplerLogger_start(const char *fileName) {
+  if (_logFile) return;
+  char buffer[128];
+  snprintf(buffer, 128, "/fs/slog/%s", fileName);
+  _logBufferIdx = 0;
+  _logFile = fopen(buffer, "w");
+}
+
+inline void currentSamplerLogger_log(uint16_t i) {
+  if (!_logFile) return;
+  _logBuffer[_logBufferIdx] = i;
+  if (++_logBufferIdx < _logBufferDepth) return;
+  fwrite(_logBuffer, sizeof(uint16_t), _logBufferDepth, _logFile);
+  _logBufferIdx = 0;
+}
+
+void currentSamplerLogger_stop() {
+  if (!_logFile) return;
+  if (_logBufferIdx)
+    fwrite(_logBuffer, sizeof(uint16_t), _logBufferIdx, _logFile);
+  fclose(_logFile);
+  _logFile = NULL;
+}
+
 // ================================= Loop =============================
 
 volatile NVLinearMapper vMapper("iv0From", "fv0To", "iv1From", "fv1To");
@@ -123,11 +154,10 @@ void powerManager_loop_cb(uint16_t v, uint16_t i) {
   voltageReading = v;
   currentReading = i;
 
-  //currentSamplerLogger_log(i);
-
   voltage = const_cast<NVLinearMapper &>(vMapper).convert(v);
   current = const_cast<NVLinearMapper &>(iMapper).convert(i);
   
   powerManager_getPowerBudget(voltage, current);
   helmsman_dispatchPower(powerBudget, 0, 0);
+  currentSamplerLogger_log(i);
 }
