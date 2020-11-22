@@ -1,8 +1,8 @@
-#include "adebug.h"
+#include <mbed.h>
 #include <string.h>
 
-#include "mbed.h"
-
+#include "adebug.h"
+#include "alma_flags.h"
 #include "reporting.h"
 
 //------------------------------------
@@ -13,7 +13,7 @@
 static Serial pc(SERIAL_TX, SERIAL_RX);
 
 void reporting_debug_print(const char *buffer) {
-  if (!reporting_serial_active) return;
+  if (!flag_copy_radio_to_serial) return;
   pc.printf(buffer);
   pc.printf("\n");
 }
@@ -36,8 +36,9 @@ static event_callback_t _readCBE = _readCB; // Implicit attach I guess
 const char *reporting_serial_read() {
   if (_commandAvailable) {
     _commandAvailable = false;
+    flag_copy_sdlog_to_serial = true;
     led(0, 1);
-   char *end = (char *)memchr(_command, '\n', _bufferSize);
+    char *end = (char *)memchr(_command, '\n', _bufferSize);
     if (!end) end = _bufferEnd;
     *end = '\0';
     return _command;

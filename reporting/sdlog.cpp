@@ -3,7 +3,9 @@
 #include "FATFileSystem.h"
 
 #include "alma_clock.h"
+#include "alma_flags.h"
 #include "alma_math.h"
+#include "reporting.h"
 #include "sdlog.h"
 
 static FILE *logFile = NULL;
@@ -153,8 +155,9 @@ void sdlog(const char *subsystem, const char *message) {
   init();
   if (logFile) {
     int err = fprintf(logFile, "%02d%02d %lu %s\t%s\n", 0, 0, alma_clock, subsystem, message);
-    printf("%lu %s\t%s\n", alma_clock, subsystem, message);
     if (err < 0) _close();
   }
   _lock.unlock();
+  if (flag_copy_sdlog_to_serial)
+    printf("%lu %s\t%s\n", alma_clock, subsystem, message);
 }

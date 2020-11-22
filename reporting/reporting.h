@@ -5,20 +5,18 @@
 #ifndef _REPORTING_H_
 #define _REPORTING_H_
 
-extern bool reporting_serial_active;
-
 void reporting_debug_print(const char *);
 
 const char *reporting_serial_read();
 void reporting_init();
 void reporting_loop();
 
-void setFlag(uint8_t flag, bool value);
-
 void reporting_get_description(unsigned);
 
 void radio_sleep();
 void radio_wakeup();
+
+extern bool radio_is_sleeping;
 
 void satellite_init(); // initialize NVStore first
 void satellite_armClock(const char *date);

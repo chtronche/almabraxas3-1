@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "alma_flags.h"
 #include "commander.h"
 #include "helmsman.h"
 #include "main.h"
@@ -85,7 +86,7 @@ void processCommand(const char *command) {
   }
   if (bc) {
     ++badCommand;
-    if (reporting_serial_active) {
+    if (flag_copy_radio_to_serial) {
       sprintf(_x, ">%s", command);
       reporting_debug_print(_x);
     }
@@ -199,13 +200,11 @@ void processCommand(const char *command) {
     break;
 
   case 0x314: // start debug
-    reporting_serial_active = true;
-    setFlag(0, true);
+    setFlag(FLAG_COPY_RADIO_TO_SERIAL, true);
     break;
     
   case 0x414: // stop debug
-    reporting_serial_active = false;
-    setFlag(0, false);
+    setFlag(FLAG_COPY_RADIO_TO_SERIAL, false);
     break;
     
   case 0x910: // get report_desc

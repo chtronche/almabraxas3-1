@@ -2,6 +2,7 @@
 
 #include "adebug.h"
 #include "alma_clock.h"
+#include "alma_flags.h"
 #include "mbed.h"
 #include "nav.h"
 #include "NVStore.h"
@@ -22,6 +23,7 @@ int main()
   sd_init();
   satellite_init();
   NVStore_dump();
+  flag_init();
   sdlog("main", "starting");
   reporting_init();
   powerManager_init();

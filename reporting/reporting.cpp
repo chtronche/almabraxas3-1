@@ -4,30 +4,18 @@
 #include "mbed.h"
 
 #include "alma_clock.h"
+#include "alma_flags.h"
 #include "alma_math.h"
 #include "AsyncStarter.h"
 #include "commander.h"
 #include "helmsman.h"
 #include "main.h"
 #include "nav.h"
-#include "NVStore.h"
 #include "ping.h"
 #include "powerManager.h"
 #include "reporting.h"
 #include "sdlog.h"
 #include "vars.h"
-
-bool reporting_serial_active = false;
-
-static uint32_t _flags;
-
-void setFlag(uint8_t flag, bool value) {
-  uint32_t mask = 1 << flag;
-  NV<uint32_t>::set("UFlags", &_flags, (_flags & ~mask) | (mask & uint32_t(value)));
-  char buffer[128];
-  snprintf(buffer, 128, "flags = %lx\n", _flags);
-  sdlog("report", buffer);
-}
 
 static void add8(char *&p, uint8_t v) {
   *p++ = v;
@@ -96,13 +84,9 @@ static const struct reportField {
 
 static char _reportDescription[FORMAT_BUFFER_LEN];
 
-// Needs NVStore_init
+// Needs flag_init
 
 void reporting_init() {
-  NV<uint32_t>::get("UFlags", &_flags);
-  vars_register("UFlags", &_flags);
-  reporting_serial_active = _flags & 1;
-
   char *rdp = _reportDescription;
   for(const reportField *p = frameDescription; p->prefix; p++) {
     unsigned len = strlen(p->prefix);
@@ -146,11 +130,13 @@ void reporting_get_description(unsigned n) {
 void reporting_loop() {
   processCommand(reporting_serial_read());
   processCommand(readRadioPacket());
+  radioCheck(alma_clock);
+
   //const char *comment = "<comment>";
   _rssi = getRSSI();
   _lat = uint32_t(latf * INT_MAX / 180.0);
   _lon = uint32_t(lonf * INT_MAX / 180.0);
-  if (reporting_serial_active) {
+  if (flag_copy_radio_to_serial) {
     for(const reportField *rfp = frameDescription; rfp->prefix; rfp++) {
       const char *prefix = rfp->prefix + 1;
       switch(rfp->prefix[0]) {
@@ -175,8 +161,11 @@ void reporting_loop() {
     //reporting_debug_print(buffer);
   }
 
+  if (radio_is_sleeping) return;
+
   char buffer[256];
   char *p = buffer;
+
   if (alma_clock >= _nextClock) {
     _nextClock = alma_clock + 10;
     p = _dump_vars(buffer);
@@ -204,9 +193,8 @@ void reporting_loop() {
     add32(p, badCommand); // 48
   }
 
-  radioCheck(alma_clock);
   if (p - buffer > 60)
-    reporting_debug_print("Radio frame too long");
-  else 
+    sdlog("reporting", "Radio frame too long");
+  else
     radioSendFrame(p - buffer, buffer);
 }

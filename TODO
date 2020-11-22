@@ -16,6 +16,7 @@ radio initial state from NV flag
 Go into sleep mode when there's no available power => not that clear
    envoi de messages si motor = off ?
 Checksum on commands
+Transfer factor between helmsmann and steer
 
 BUGS
 radio stop/start not persistent

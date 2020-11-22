@@ -59,4 +59,3 @@ void helmsman_dispatchPower(uint16_t powerBudget, uint8_t heading, uint8_t targe
   // PID should take place here
   steer(powerBudget, (targetHeading - heading) / 2, forcedSteering_reverse);
 }
-

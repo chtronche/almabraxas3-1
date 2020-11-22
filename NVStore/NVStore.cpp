@@ -22,7 +22,6 @@ template<class T> void NV<T>::set(const char *key, T *var, T value) {
 template<class T> void NV<T>::setFirstValue(const char *key, T value) {
   char buffer[sizeof(T)];
   int error = nvStore.get(key, buffer, sizeof(T));
-  printf("setFirstValue %s res=%d (%d)\n", key, error, MBED_ERROR_ITEM_NOT_FOUND);
   if (!error || error != MBED_ERROR_ITEM_NOT_FOUND) return;
   nvStore.set(key, &value, sizeof(T), 0);
 }
