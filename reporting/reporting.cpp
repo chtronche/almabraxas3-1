@@ -170,27 +170,24 @@ void reporting_loop() {
     _nextClock = alma_clock + 10;
     p = _dump_vars(buffer);
   } else {
-    add32(p, alma_clock); // 4
-    add16(p, voltage); // 6
-    add16(p, voltageReading); // 8
-    add16(p, current); // 10
-    add16(p, currentReading); // 12
-    add16(p, powerBudget); // 14
-    add8(p, mppt_direction); // 16
-    add16(p, leftPower); // 18
-    add16(p, rightPower); // 20
-    add32(p, peakPower); // 24
-    add16(p, heading); // 26
-    add8(p, magneticHeading); // 27
-    add8(p, targetHeading); // 28
-    add8(p, helm); // 29
-    add8(p, forcedSteering_reverse); // 30
-    add16(p, uNavPnt); // 32
-    add32(p, uint32_t(latf * INT_MAX / 180.0)); // 36
-    add32(p, uint32_t(lonf * INT_MAX / 180.0)); // 40
-    add16(p, _rssi); // 42
-    add16(p, ping.lost); // 44
-    add32(p, badCommand); // 48
+    for(const reportField *rfp = frameDescription; rfp->prefix; rfp++) {
+      switch(rfp->prefix[0]) {
+      case '1':
+	add8(p, *(uint8_t *)rfp->varp);
+	break;
+      case '2':
+	add16(p, *(int16_t *)rfp->varp);
+	break;
+      case '4':
+	add32(p, *(uint32_t *)rfp->varp);
+	break;
+      case 'l':
+	add32(p, *(uint32_t *)rfp->varp);
+	break;
+      default:
+	printf("Radio: ?%c?", rfp->prefix[0]);
+      }
+    }
   }
 
   if (p - buffer > 60)

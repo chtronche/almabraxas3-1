@@ -17,6 +17,7 @@ Go into sleep mode when there's no available power => not that clear
    envoi de messages si motor = off ?
 Checksum on commands
 Transfer factor between helmsmann and steer
+Put the reporters (radio / satellite) in their own task. What if radio is frozen ?
 
 BUGS
 radio stop/start not persistent

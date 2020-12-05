@@ -34,7 +34,7 @@ static void splitMessage(char *msg) {
 
 Mutex coordMutex;
 float latf = 100;
-float lonf = 200;
+float lonf = -119;
 
 static float convertDeg(const char *p, bool _3digit, bool neg) {
   const char *pp;

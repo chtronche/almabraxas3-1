@@ -45,9 +45,11 @@ void radioSendFrame(unsigned len, const char *s) {
   if (radio_is_sleeping) return;
   led(0x4, 0xc);
   _init.ready();
-  if (len < 58) {
+  if (len < RF69_MAX_DATA_LEN - 1) {
     ((char *)s)[len] = computeCRC(len, s);
     ++len;
+  } else {
+    printf("radio packet too long !");
   }
   led(0x8, 0xc);
   rfm69.send(99, s, len, false);

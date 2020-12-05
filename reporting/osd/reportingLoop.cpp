@@ -5,11 +5,6 @@
 #include "alma_flags.h"
 #include "reporting.h"
 
-//------------------------------------
-// Hyperterminal configuration
-// 9600 bauds, 8-bit data, no parity
-//------------------------------------
-
 static Serial pc(SERIAL_TX, SERIAL_RX);
 
 void reporting_debug_print(const char *buffer) {
