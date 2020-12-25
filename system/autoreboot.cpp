@@ -14,6 +14,7 @@ void mbed_error_reboot_callback(mbed_error_ctx *error_context) {
 }
 
 void autoreboot_init() {
+  if (!past) return;
   NV<uint32_t>::setFirstValue("UAutoRbt", 0);
   uint32_t UAutoRbt = NV<uint32_t>::get("UAutoRbt");
   NV<uint32_t>::set("UAutoRbt", &UAutoRbt, UAutoRbt + 1);
