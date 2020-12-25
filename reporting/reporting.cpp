@@ -103,7 +103,7 @@ void reporting_init() {
     rdp[-1] = '\0';
   }
   printf("\treporting description is '%s'\n", _reportDescription);
-  sdlog("up", "reporting");
+  sdlog("reporting", "up");
 }
 
 void reporting_get_description(unsigned n) {

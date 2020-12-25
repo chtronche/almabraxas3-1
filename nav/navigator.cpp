@@ -100,7 +100,7 @@ void nav_init() {
   uNavPnt = -1; // debug
   setTarget(0);
   //retrieve navPlan
-  sdlog("up", "nav");
+  sdlog("nav", "up");
 }
 
 float computeTargetHeading(float lat, float lon) {

@@ -141,8 +141,8 @@ void powerManager_init() {
   const_cast<NVLinearMapper &>(vMapper).retrieve();
   const_cast<NVLinearMapper &>(iMapper).retrieve();
   char buffer[128];
-  sprintf(buffer, "powermanager %f %f", iMapper.a, iMapper.b);
-  sdlog("up", buffer);
+  sprintf(buffer, "up %f %f", iMapper.a, iMapper.b);
+  sdlog("powermanager", buffer);
 }
 
 #include "adebug.h"

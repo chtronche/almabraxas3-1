@@ -154,7 +154,7 @@ static void initProc() {
   gps.read((uint8_t *)_gpsMessage, gpsBufferLength - 1, serialCB, SERIAL_EVENT_RX_ALL, '\n');
   const char *const *script = startupMessages;
   gps_wakeup();
-  sdlog("up", "gps");
+  sdlog("gps", "up");
 
   for(;;) {
     _e.wait_any(1);

@@ -6,7 +6,6 @@ Compression des logs.
 Dialogue satellite.
 "run prog xxx"
 navplan reading
-current sampling log
 Arret du moteur apres 36 fix manques (pas 1) = 3 minutes
       compteur pour connaitre l'influence
 Modification navplan a distance
@@ -21,3 +20,7 @@ Put the reporters (radio / satellite) in their own task. What if radio is frozen
 
 BUGS
 radio stop/start not persistent
+sd log file isn't rotated when there's no GPS signal
+
+MAY BE NOT A GOOD IDEA (STAND BY)
+dump internal flash only once a day ?

@@ -1,3 +1,4 @@
+#define private public // Access FXOS8700 I2C for init
 #include "FXOS8700.h"
 #include "sdlog.h"
 #include "wiring.h"
@@ -16,5 +17,9 @@ uint8_t getMagneticHeading() {
 
 void compass_init() {
   compass.mag_config();
-  sdlog("up", "compass");
+  char byte;
+  byte = FXOS8700_WHO_AM_I;
+  compass.accelmagi2c.write(FXOS8700_I2C_ADDRESS, &byte, 1, true);
+  compass.accelmagi2c.read(FXOS8700_I2C_ADDRESS, &byte, 1);
+  sdlog("compass", byte == 0xc7 ? "up" : "init error");
 }
