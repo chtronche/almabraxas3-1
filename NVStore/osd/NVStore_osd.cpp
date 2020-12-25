@@ -60,34 +60,42 @@ void NVStore_init() {
 }
 
 void NVStore_dump() {
+  printf("NVStore_dump\n");
   KVStore::iterator_t i;
   char key[16];
-  uint32_t U;
   for(nvStore.iterator_open(&i); nvStore.iterator_next(i, key, 16) == MBED_SUCCESS;) {
     char buffer[128];
     snprintf(buffer, 128, "%s\t", key);
     char *p = strchr(buffer, '\0');
-    int left = p - buffer;
+    int left = buffer + 128 - p;
+    char var[16];
+    size_t s;
     switch(key[0]) {
     case 'i':
-      snprintf(p, left, "%d", NV<int16_t>::get(key));
+      s = sizeof(int16_t);
       break;
 
     case 'u':
-      snprintf(p, left, "%d", NV<uint16_t>::get(key));
+      s = sizeof(uint16_t);
       break;
 
     case 'U':
-      U = NV<uint32_t>::get(key);
-      snprintf(p, left, "%ld %lxd", U, U);
+      s = sizeof(uint32_t);
       break;
 
     case 'f':
-      snprintf(p, left, "%f", NV<float>::get(key));
+      s = sizeof(float);
       break;
 
     default:
+      s = 0;
       break;
+    }
+    if (s) {
+      nvStore.get(key, var, s);
+      NV_snprintf(p, left, key, var);
+    } else {
+      snprintf(p, left, "unknown type %c", key[0]);
     }
     sdlog("nvdump", buffer);
   }

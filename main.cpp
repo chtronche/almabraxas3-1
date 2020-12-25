@@ -11,6 +11,7 @@
 #include "reporting.h"
 #include "sd.h"
 #include "sdlog.h"
+#include "system.h"
 
 Ping ping;
 
@@ -21,9 +22,10 @@ int main()
   reporting_serial_init();
   NVStore_init();
   sd_init();
-  satellite_init();
-  NVStore_dump();
+  autoreboot_init();
   flag_init();
+  NVStore_dump();
+  satellite_init();
   sdlog("main", "starting");
   reporting_init();
   powerManager_init();
