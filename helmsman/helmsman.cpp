@@ -45,7 +45,7 @@ static void steer(uint16_t powerBudget, int helm_, bool reverse) {
 void helmsman_dispatchPower(uint16_t powerBudget, uint8_t heading, uint8_t targetHeading) {
   (void)heading;
   (void)targetHeading;
-  if (!fixOk && mpptOn && forcedSteering == -128) {
+  if (!fixOk && mppt_direction && forcedSteering == -128) {
     // We don't know where we are (and thus where to go)
     steer(0, 0, false);
     return;

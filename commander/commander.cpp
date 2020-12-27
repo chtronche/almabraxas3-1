@@ -111,11 +111,11 @@ void processCommand(const char *command) {
     break;
 
   case 0x202: // Reset budget
-    mpptOn = true;
+    mppt_direction = 2;
     break;
 
   case 0x102: // Set budget
-    mpptOn = false;
+    mppt_direction = 0;
     powerBudget = atoi(_next);
     break;
 

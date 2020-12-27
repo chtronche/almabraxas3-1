@@ -15,14 +15,16 @@ void powerManager_loop_cb(uint16_t v, uint16_t i);
 
 extern volatile uint8_t voltage; // in V/10
 extern volatile uint8_t current; // in A/10
-extern int8_t mppt_direction;    // +2 if increasing, -2 if decreasing
-extern  uint16_t powerBudget;     // in PWM unit
+extern volatile int8_t mppt_direction;    // +2 if increasing, -2 if decreasing, 0 if mppt algorithm is off (budget set manually, possibly to 0)
+extern volatile uint16_t powerBudget;     // in PWM unit
 
 extern volatile NVLinearMapper vMapper, iMapper;
 
-// Control
+// MPPT hardware switch 
 
-extern bool mpptOn; // false to set powerBudget manually
+void mpptSwitch_init();
+void mpptSwitch_on();
+void mpptSwitch_off();
 
 // debug
 

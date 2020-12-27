@@ -19,16 +19,14 @@
 volatile uint8_t voltage; // in V/10
 volatile uint8_t current; // in A/10
 
-uint16_t powerBudget = 0; // in PWM units
+volatile uint16_t powerBudget = 0; // in PWM units
 static uint16_t peakPowerBudget = 0; // in PWM unit
-
-bool mpptOn = true;
 
 // ============================== getPowerBudget ================================
 
 power_t peakPower;
 
-int8_t mppt_direction = 2; // start by increasing
+volatile int8_t mppt_direction = 2; // start by increasing
 unsigned _hysteresis = 200; // That is 2W
 
 static void reverseMPPTDirection() {
@@ -43,7 +41,7 @@ static void reverseMPPTDirection() {
 static uint16_t _uvPT0 = 0;
 
 static void powerManager_getPowerBudget(uint8_t voltage, uint8_t current) {
-  if (!mpptOn) return;
+  if (!mppt_direction) return;
   if (voltage < _uvPT0) {
     powerBudget = peakPower = peakPowerBudget = 0;
     mppt_direction = 2;
@@ -142,6 +140,7 @@ void powerManager_init() {
   const_cast<NVLinearMapper &>(iMapper).retrieve();
   char buffer[128];
   sprintf(buffer, "up %f %f", iMapper.a, iMapper.b);
+  mpptSwitch_init();
   sdlog("powermanager", buffer);
 }
 
@@ -161,3 +160,15 @@ void powerManager_loop_cb(uint16_t v, uint16_t i) {
   helmsman_dispatchPower(powerBudget, 0, 0);
   currentSamplerLogger_log(i);
 }
+
+// ================================= Harware switch  =============================
+
+void mpptSwitch_on() {
+  mppt_direction = 2;
+}
+
+void mpptSwitch_off() {
+  mppt_direction = 0;
+  powerBudget = 0;
+}
+

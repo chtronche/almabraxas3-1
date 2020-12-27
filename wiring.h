@@ -43,4 +43,6 @@ static const PinName GPS_RX = PA_10;
 
 static const PinName DHT_22_1WIRE = PC_3;
 
+static const PinName MPPT_SWITCH_INT = PA_6;
+
 #endif // _WIRING_H_
