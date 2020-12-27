@@ -1,0 +1,109 @@
+// Part of the Almabraxas 3-1 project https://tronche.com/wiki/
+// (c) Ch. Tronche 2018 (ch@tronche.com)
+// MIT License
+// Schema of the software architecture
+// This is a .dot file, try visualizing it with xdot or compatible viewers
+
+digraph name {
+
+node [shape=rectangle];
+
+powerManager [shape=component,label="powerManager
+freq: 100 Hz
+Sampling freq: 23 kHz"];
+
+// powerManager_byProduct [shape=record,style=filled,
+// label="{voltage|current|mppt direction}|
+// {V/10|A/10|+/-}|
+// {uint8_t|uint8_t|int8_t (+1/-1)}"];
+
+powerManager_byProduct [shape=plain,label=<
+<table border="0" cellborder="1" cellspacing="0" bgcolor="lightgray">
+<tr><td>voltage</td><td>V/10</td><td>uint8_t</td></tr>
+<tr><td>current</td><td>A/10</td><td>uint8_t</td></tr>
+<tr><td>mppt_direction</td><td>+/-</td><td>int8_t (+2/-2)</td></tr>
+</table>>];
+
+powerData [label=<
+<table border="0" cellborder="1" cellspacing="0">
+<tr><td>powerBudget</td><td>PWM unit (even)</td><td>uint16_t</td></tr>
+</table>>];
+
+ADC [shape=ellipse, label="ADC x 2"];
+ADC -> powerManager;
+
+powerManager -> powerManager_byProduct;
+powerManager -> powerData;
+
+UART1 [shape=ellipse,label="GPS\n(UART1)"];
+UART1 -> navigator;
+
+navigator_byProduct [shape=plain;label=<
+<table border='0' cellborder="1" cellspacing="0"  bgcolor="lightgray">
+<tr><td>timestamp</td><td>s since 2000</td><td>uint32_t</td></tr>
+<tr><td>lat</td><td></td><td>uint32_t</td></tr>
+<tr><td>lon</td><td></td><td>uint32_t</td></tr>
+<tr><td>Distance from last point</td><td>m</td><td>uint32_t</td></tr>
+<tr><td>course (GPS) / heading (compass)</td><td>bool</td><td>uint8_t</td></tr>
+<tr><td>WP</td><td></td><td>uint16_t</td></tr>
+<tr><td>WP lat</td><td></td><td>uint32_t</td></tr>
+<tr><td>WP lon</td><td></td><td>uint32_t</td></tr>
+</table>>];
+
+navigator [shape=component,label="navigator
+freq: GPS clocked"];
+
+headingData [label=<
+<table border="0" cellborder="1" cellspacing="0">
+<tr><td>course/heading</td><td>circ % 256</td><td>uint8_t</td></tr>
+<tr><td>bearing (target)</td><td>circ % 256</td><td>uint8_t</td></tr>
+</table>>];
+
+navigator -> headingData;
+
+navigator_byProduct -> navigator [dir=back];
+
+compass [shape=ellipse,label="compass\n(I2C)"];
+compass -> navigator;
+
+navPlan [shape=cylinder,label="navPlan\n+WP #"];
+navPlan -> navigator;
+
+PWM [shape=ellipse,label="PWM x 2"];
+
+helmsman;
+
+headingData -> helmsman[style=dashed];
+helmsman -> PWM;
+powerData -> helmsman;
+
+helmsman_byProduct [shape=plain;label=<
+<table border='0' cellborder="1" cellspacing="0"  bgcolor="lightgray">
+<tr><td>left power</td><td>PWM</td><td>int16_t</td></tr>
+<tr><td>right power</td><td>PWM</td><td>int16_t</td></tr>
+</table>>];
+
+helmsman -> helmsman_byProduct;
+
+{rank=same; helmsman,helmsman_byProduct};
+{rank=same; powerData,UART3};
+{rank=same; navigator_byProduct,navigator,powerManager,powerManager_byProduct};
+
+////////////////////////////////////////////////////////////////////////////////
+
+reporting [shape=component,style=dashed,
+	   label="reporting / master\nfreq: 10Hz radio, 1/3600 Hz satellite"];
+
+UART3 [shape=ellipse,label="Satellite modem\n(UART3)"];
+UART3 -> reporting [dir=both];
+
+RFM69 [shape=ellipse,label="RFM69\n(SPI + 2 PAL)"];
+RFM69 -> reporting [dir=both];
+
+SDcard [shape=ellipse,label="SDcard\n(SPI)"];
+reporting -> SDcard;
+
+UART2 [shape=ellipse,label="debug\n(UART2)"];
+reporting -> UART2;
+
+}

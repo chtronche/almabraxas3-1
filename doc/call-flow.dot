@@ -1,0 +1,43 @@
+// Part of the Almabraxas 3-1 project https://tronche.com/wiki/
+// (c) Ch. Tronche 2020 (ch@tronche.com)
+// MIT License
+// This is a .dot file, try visualizing it with xdot or compatible viewers
+
+digraph name {
+
+rankdir="LR";
+
+node [shape=component,width=2];
+
+main;
+powerManager_loop_cb;
+gpsLoop;
+
+node [shape=rectangle,width=3];
+
+
+main -> alma_clock_advance;
+main -> reporting_loop;
+
+gpsLoop -> processGPSMessage;
+gpsLoop -> bearing_loop;
+
+powerManager_loop_cb [shape=component];
+
+powerManager_loop_cb -> powerManager_getPowerBudget;
+powerManager_loop_cb -> helmsman_dispatchPower;
+
+node [width=2];
+
+helmsman_dispatchPower -> steer;
+steer -> setMotorPower;
+
+bearing_loop -> computeBearing;
+bearing_loop -> computeTargetHeading;
+
+processGPSMessage -> alma_clock_resetClock;
+processGPSMessage -> sdlog_checkClock;
+
+processGPSMessage -> satellite_loop;
+
+}
