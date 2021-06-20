@@ -22,7 +22,7 @@ static char *const _bufferEnd = _command + _bufferSize - 1;
 static bool _commandAvailable = false;
 
 static void _readCB(int events) {
-  led(1, 0xf);
+  led_set(led_red, 0);
   _commandAvailable = true;
 }
 
@@ -32,7 +32,7 @@ const char *reporting_serial_read() {
   if (_commandAvailable) {
     _commandAvailable = false;
     flag_copy_sdlog_to_serial = true;
-    led(0, 1);
+    led_set(0, led_red);
     char *end = (char *)memchr(_command, '\n', _bufferSize);
     if (!end) end = _bufferEnd;
     *end = '\0';

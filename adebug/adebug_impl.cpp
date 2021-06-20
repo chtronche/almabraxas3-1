@@ -1,4 +1,4 @@
-#include "debug.h"
+#include "adebug.h"
 #include "mbed.h"
 #include "wiring.h"
 
@@ -12,10 +12,12 @@ static DigitalOut *_driver[] = {
     &redLed, &greenLed, &yellowLed, &blueLed, &whiteLed, NULL
     };
     
-void led(int n, unsigned mask) {
+void led_set(unsigned set_mask, unsigned clear_mask) {
   unsigned bit = 1;
   for(DigitalOut **p = _driver; *p; p++) {
-    if (mask & bit) (*p)->write(n&bit);
+    if (set_mask & bit) (*p)->write(1);
+    if (clear_mask & bit) (*p)->write(0);
     bit = bit << 1;
   }
 }
+

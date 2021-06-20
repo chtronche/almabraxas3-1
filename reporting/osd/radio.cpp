@@ -12,7 +12,7 @@
 RFM69 rfm69(RFM69_MOSI, RFM69_MISO, RFM69_SCLK, RFM69_CS, RFM69_INT);
 static DigitalOut reset(RFM69_RST);
 
-static void _initProc() {
+void radio_reset() {
   reset.write(1);
   wait_us(100);
   reset.write(0);
@@ -26,6 +26,10 @@ static void _initProc() {
   rfm69.writeReg(REG_BITRATELSB, RF_BITRATELSB_100000);
 }
 
+static void _initProc() {
+  radio_reset();
+}
+
 static AsyncStarter _init("t/radio", _initProc);
 
 static uint32_t _nextCheck = 0;
@@ -36,14 +40,14 @@ void radioCheck(uint32_t clock) {
   if (clock < _nextCheck) return;
   _nextCheck = clock + 600;
   char buffer[128];
-  sprintf(buffer, "radioCheck %x sleeping=%d", rfm69.readReg(REG_BITRATEMSB), radio_is_sleeping);
+  sprintf(buffer, "radioCheck %x (should be %d) sleeping=%d", rfm69.readReg(REG_BITRATEMSB), 
+	  RF_BITRATEMSB_100000, radio_is_sleeping);
   sdlog("radioCheck", buffer);
 }
 
-
 void radioSendFrame(unsigned len, const char *s) {
   if (radio_is_sleeping) return;
-  led(0x4, 0xc);
+  led_set(led_white, 0);
   _init.ready();
   if (len < RF69_MAX_DATA_LEN - 1) {
     ((char *)s)[len] = computeCRC(len, s);
@@ -51,11 +55,15 @@ void radioSendFrame(unsigned len, const char *s) {
   } else {
     printf("radio packet too long !");
   }
-  led(0x8, 0xc);
+  led_set(led_blue, led_white);
+  Timer t;
+  t.start();
   rfm69.send(99, s, len, false);
-  led(0xc, 0xc);
+  t.stop();
+  led_set(led_white, 0);
+  printf("%d bytes sent in %d us\n", len, t.read_us());
   rfm69.receiveDone();
-  led(0, 0xc);
+  led_set(0, led_white | led_blue);
 }
 
 static char buffer[RF69_MAX_DATA_LEN + 1];
@@ -73,6 +81,7 @@ char *readRadioPacket() {
   radioSendFrame(strlen(_buffer), _buffer);
   return buffer;
 }
+
 
 int16_t getRSSI() {
   return rfm69.RSSI;

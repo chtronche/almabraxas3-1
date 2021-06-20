@@ -22,6 +22,8 @@ void satellite_init(); // initialize NVStore first
 void satellite_armClock(const char *date);
 void satellite_loop();
 
+void radio_reset();
+
 // Impl
 
 void radioSendFrame(unsigned len, const char *);

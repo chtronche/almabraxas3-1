@@ -7,6 +7,7 @@
 #include "helmsman.h"
 #include "main.h"
 #include "nav.h"
+#include "NVStore.h"
 #include "ping.h"
 #include "powerManager.h"
 #include "reporting.h"
@@ -25,6 +26,7 @@ static token _verbFinderData[] = {
   "convert", 0x600,
   "pi", 0x700,
   "get", 0x900,
+  "dump", 0xa00,
   NULL, 0
 };
 
@@ -187,6 +189,10 @@ void processCommand(const char *command) {
     gps_sleep();
     break;
 
+  case 0x212: // reset radio
+    radio_reset();
+    break;
+
   case 0x312: // start radio
     radio_wakeup();
     break;
@@ -225,6 +231,10 @@ void processCommand(const char *command) {
 
   case 0x415: //stop logISamp
     currentSamplerLogger_stop();
+    break;
+
+  case 0xa0f: // dump var
+    NVStore_dump();
     break;
 
   default:
